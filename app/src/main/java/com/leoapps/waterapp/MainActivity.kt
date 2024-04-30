@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.leoapps.waterapp.composables.HomeTimePeriodTabId
 import com.leoapps.waterapp.composables.NavBarTab
 import com.leoapps.waterapp.composables.ToggleNavBar
 import com.leoapps.waterapp.ui.theme.WaterAppTheme
@@ -20,12 +21,12 @@ class MainActivity : ComponentActivity() {
                 ToggleNavBar(
                     tabs = listOf(
                         NavBarTab(
-                            id = NavBarTab.TabId.DAY,
+                            id = HomeTimePeriodTabId.DAY,
                             titleResId = R.string.home_navbar_tab_day,
                             isSelected = true
                         ),
                         NavBarTab(
-                            id = NavBarTab.TabId.WEEK,
+                            id = HomeTimePeriodTabId.WEEK,
                             titleResId = R.string.home_navbar_tab_week,
                             isSelected = false
                         ),
