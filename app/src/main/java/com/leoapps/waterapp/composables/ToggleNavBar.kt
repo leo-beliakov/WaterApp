@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -79,10 +80,8 @@ fun ToggleNavBarTab(
         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
         modifier = modifier
             .fillMaxHeight()
-            .background(
-                color = backgroundColor,
-                shape = RoundedCornerShape(32.dp),
-            )
+            .clip(RoundedCornerShape(32.dp))
+            .background(color = backgroundColor)
             .clickable(onClick = onTabClicked)
     ) {
         tab.iconResId?.let { iconId ->
@@ -136,17 +135,17 @@ private fun ToggleNavBarIconPreview() {
             colorScheme = ColorScheme.PRIMARY,
             tabs = listOf(
                 NavBarTab(
-                    id = HomeTimePeriodTabId.DAY,
+                    id = BottomNavBarTab.HOME,
                     iconResId = R.drawable.ic_drop,
                     isSelected = true
                 ),
                 NavBarTab(
-                    id = HomeTimePeriodTabId.WEEK,
+                    id = BottomNavBarTab.BOTTLE,
                     iconResId = R.drawable.ic_bottle,
                     isSelected = false
                 ),
                 NavBarTab(
-                    id = HomeTimePeriodTabId.WEEK,
+                    id = BottomNavBarTab.PROFILE,
                     iconResId = R.drawable.ic_profile,
                     isSelected = false
                 ),
