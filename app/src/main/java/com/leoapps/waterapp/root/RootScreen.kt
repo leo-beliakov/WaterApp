@@ -21,7 +21,7 @@ import com.leoapps.waterapp.common.utils.openTab
 import com.leoapps.waterapp.composables.tab_bar.TabBar
 import com.leoapps.waterapp.composables.tab_bar.TabBarColorScheme
 import com.leoapps.waterapp.composables.tab_bar.TabBarSize
-import com.leoapps.waterapp.home.HomeScreen
+import com.leoapps.waterapp.home.root.HomeScreen
 import com.leoapps.waterapp.root.model.RootTab
 import com.leoapps.waterapp.root.model.RootUiEffect
 import com.leoapps.waterapp.water.ProfileScreen

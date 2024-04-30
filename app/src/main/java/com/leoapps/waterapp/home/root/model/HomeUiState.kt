@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.home.model
+package com.leoapps.waterapp.home.root.model
 
 data class HomeUiState(
     val selectedTab: HomeTab = HomeTab.Day,

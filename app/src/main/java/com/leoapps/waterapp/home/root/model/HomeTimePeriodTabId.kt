@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.home
+package com.leoapps.waterapp.home.root.model
 
 enum class HomeTimePeriodTabId(val route: String) {
     DAY("day"),

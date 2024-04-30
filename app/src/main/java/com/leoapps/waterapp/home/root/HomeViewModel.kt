@@ -1,10 +1,10 @@
-package com.leoapps.waterapp.home
+package com.leoapps.waterapp.home.root
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.leoapps.waterapp.home.model.HomeTab
-import com.leoapps.waterapp.home.model.HomeUiEffect
-import com.leoapps.waterapp.home.model.HomeUiState
+import com.leoapps.waterapp.home.root.model.HomeTab
+import com.leoapps.waterapp.home.root.model.HomeUiEffect
+import com.leoapps.waterapp.home.root.model.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,6 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor() : ViewModel() {
     private val _state = MutableStateFlow(HomeUiState())
     val state = _state.asStateFlow()
-
 
     private val _sideEffects = MutableSharedFlow<HomeUiEffect>(replay = 1)
     val sideEffects: SharedFlow<HomeUiEffect> = _sideEffects

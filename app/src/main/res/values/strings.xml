@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">WaterApp</string>
 
+    <string name="home_screen_title">Current volume</string>
     <string name="home_navbar_tab_day">Day</string>
     <string name="home_navbar_tab_week">Week</string>
+    <string name="home_beverage_water_title">100ml</string>
+    <string name="home_beverage_coffee_title">150ml</string>
+    <string name="home_beverage_juice_title">250ml</string>
+    <string name="home_beverage_cola_title">500ml</string>
 </resources>

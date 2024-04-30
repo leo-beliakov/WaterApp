@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.home.model
+package com.leoapps.waterapp.home.root.model
 
 sealed interface HomeUiEffect {
     data class NavigateToTab(

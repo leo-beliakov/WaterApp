@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.home.model
+package com.leoapps.waterapp.home.root.model
 
 import com.leoapps.waterapp.R
 import com.leoapps.waterapp.composables.tab_bar.TabBarTab
