@@ -1,7 +1,7 @@
 package com.leoapps.waterapp.home.model
 
-import com.leoapps.waterapp.composables.NavBarTab
+import com.leoapps.waterapp.composables.tab_bar.TabBarTab
 
 data class HomeUiState(
-    val tabs: List<NavBarTab>
+    val tabs: List<TabBarTab>
 )

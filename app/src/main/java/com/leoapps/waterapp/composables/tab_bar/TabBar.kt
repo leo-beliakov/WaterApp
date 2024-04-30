@@ -1,7 +1,5 @@
-package com.leoapps.waterapp.composables
+package com.leoapps.waterapp.composables.tab_bar
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,24 +17,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.leoapps.waterapp.R
-import com.leoapps.waterapp.ui.theme.NavyDark
+import com.leoapps.waterapp.home.HomeTimePeriodTabId
+import com.leoapps.waterapp.root.model.RootTab
 import com.leoapps.waterapp.ui.theme.WaterAppTheme
-import com.leoapps.waterapp.ui.theme.White
 
 @Composable
-fun ToggleNavBar(
-    tabs: List<NavBarTab>,
-    size: NavBarSize = NavBarSize.MEDIUM,
-    colorScheme: ColorScheme = ColorScheme.PRIMARY,
-    onTabClicked: (NavBarTab) -> Unit,
+fun TabBar(
+    selectedTabId: TabId,
+    tabs: List<TabBarTab>,
+    size: TabBarSize = TabBarSize.MEDIUM,
+    colorScheme: TabBarColorScheme = TabBarColorScheme.PRIMARY,
+    onTabClicked: (TabBarTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -51,8 +48,9 @@ fun ToggleNavBar(
             .padding(8.dp)
     ) {
         tabs.forEach { tab ->
-            ToggleNavBarTab(
+            Tab(
                 tab = tab,
+                isSelected = selectedTabId == tab.id,
                 colorScheme = colorScheme,
                 onTabClicked = { onTabClicked(tab) },
                 modifier = Modifier.weight(1f)
@@ -62,17 +60,18 @@ fun ToggleNavBar(
 }
 
 @Composable
-fun ToggleNavBarTab(
-    tab: NavBarTab,
-    colorScheme: ColorScheme,
+private fun Tab(
+    isSelected: Boolean,
+    tab: TabBarTab,
+    colorScheme: TabBarColorScheme,
     onTabClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val backgroundColor = remember(tab.isSelected) {
-        if (tab.isSelected) colorScheme.accentColor else colorScheme.primaryColor
+    val backgroundColor = remember(isSelected) {
+        if (isSelected) colorScheme.accentColor else colorScheme.primaryColor
     }
-    val contentColor = remember(tab.isSelected) {
-        if (tab.isSelected) colorScheme.primaryColor else colorScheme.accentColor
+    val contentColor = remember(isSelected) {
+        if (isSelected) colorScheme.primaryColor else colorScheme.accentColor
     }
 
     Row(
@@ -104,21 +103,20 @@ fun ToggleNavBarTab(
 
 @Preview
 @Composable
-private fun ToggleNavBarTextPreview() {
+private fun TabBarTextPreview() {
     WaterAppTheme {
-        ToggleNavBar(
-            size = NavBarSize.MEDIUM,
-            colorScheme = ColorScheme.INVERSED,
+        TabBar(
+            size = TabBarSize.MEDIUM,
+            colorScheme = TabBarColorScheme.INVERSED,
+            selectedTabId = HomeTimePeriodTabId.DAY.route,
             tabs = listOf(
-                NavBarTab(
-                    id = HomeTimePeriodTabId.DAY,
+                TabBarTab(
+                    id = HomeTimePeriodTabId.DAY.route,
                     titleResId = R.string.home_navbar_tab_day,
-                    isSelected = true
                 ),
-                NavBarTab(
-                    id = HomeTimePeriodTabId.WEEK,
+                TabBarTab(
+                    id = HomeTimePeriodTabId.WEEK.route,
                     titleResId = R.string.home_navbar_tab_week,
-                    isSelected = false
                 ),
             ),
             onTabClicked = { }
@@ -128,56 +126,27 @@ private fun ToggleNavBarTextPreview() {
 
 @Preview
 @Composable
-private fun ToggleNavBarIconPreview() {
+private fun TabBarIconPreview() {
     WaterAppTheme {
-        ToggleNavBar(
-            size = NavBarSize.LARGE,
-            colorScheme = ColorScheme.PRIMARY,
+        TabBar(
+            size = TabBarSize.LARGE,
+            colorScheme = TabBarColorScheme.PRIMARY,
+            selectedTabId = RootTab.HOME.route,
             tabs = listOf(
-                NavBarTab(
-                    id = BottomNavBarTab.HOME,
+                TabBarTab(
+                    id = RootTab.HOME.route,
                     iconResId = R.drawable.ic_drop,
-                    isSelected = true
                 ),
-                NavBarTab(
-                    id = BottomNavBarTab.BOTTLE,
+                TabBarTab(
+                    id = RootTab.BOTTLE.route,
                     iconResId = R.drawable.ic_bottle,
-                    isSelected = false
                 ),
-                NavBarTab(
-                    id = BottomNavBarTab.PROFILE,
+                TabBarTab(
+                    id = RootTab.PROFILE.route,
                     iconResId = R.drawable.ic_profile,
-                    isSelected = false
                 ),
             ),
             onTabClicked = { }
         )
     }
-}
-
-data class NavBarTab(
-    val id: Any,
-    @DrawableRes val iconResId: Int? = null,
-    @StringRes val titleResId: Int? = null,
-    val isSelected: Boolean,
-)
-
-enum class ColorScheme(
-    val primaryColor: Color,
-    val accentColor: Color,
-) {
-    PRIMARY(
-        primaryColor = White,
-        accentColor = NavyDark,
-    ),
-    INVERSED(
-        primaryColor = NavyDark,
-        accentColor = White,
-    )
-}
-
-enum class NavBarSize(val sizeDp: Dp) {
-    SMALL(56.dp),
-    MEDIUM(64.dp),
-    LARGE(88.dp)
 }
