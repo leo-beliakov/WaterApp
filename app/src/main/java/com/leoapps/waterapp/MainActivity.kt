@@ -3,13 +3,12 @@ package com.leoapps.waterapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.leoapps.waterapp.composables.NavBarTab
+import com.leoapps.waterapp.composables.ToggleNavBar
 import com.leoapps.waterapp.ui.theme.WaterAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,12 +17,21 @@ class MainActivity : ComponentActivity() {
         setContent {
             WaterAppTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+                ToggleNavBar(
+                    tabs = listOf(
+                        NavBarTab(
+                            id = NavBarTab.TabId.DAY,
+                            titleResId = R.string.home_navbar_tab_day,
+                            isSelected = true
+                        ),
+                        NavBarTab(
+                            id = NavBarTab.TabId.WEEK,
+                            titleResId = R.string.home_navbar_tab_week,
+                            isSelected = false
+                        ),
+                    ),
+                    onTabClicked = { }
+                )
             }
         }
     }
