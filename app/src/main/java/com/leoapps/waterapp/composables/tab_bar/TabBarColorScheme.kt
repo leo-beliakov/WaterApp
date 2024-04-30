@@ -12,7 +12,7 @@ enum class TabBarColorScheme(
         primaryColor = White,
         accentColor = NavyDark,
     ),
-    INVERSED(
+    INVERTED(
         primaryColor = NavyDark,
         accentColor = White,
     )

@@ -2,10 +2,8 @@ package com.leoapps.waterapp.root
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.leoapps.waterapp.R
-import com.leoapps.waterapp.composables.tab_bar.TabBarTab
-import com.leoapps.waterapp.root.model.RootSideEffect
 import com.leoapps.waterapp.root.model.RootTab
+import com.leoapps.waterapp.root.model.RootUiEffect
 import com.leoapps.waterapp.root.model.RootUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,39 +19,21 @@ import javax.inject.Inject
 @HiltViewModel
 class RootViewModel @Inject constructor() : ViewModel() {
 
-    private val _state = MutableStateFlow(getInitialState())
+    private val _state = MutableStateFlow(RootUiState())
     val state = _state.asStateFlow()
 
-    private val _sideEffects = MutableSharedFlow<RootSideEffect>(replay = 1)
-    val sideEffects: SharedFlow<RootSideEffect> = _sideEffects
+    private val _sideEffects = MutableSharedFlow<RootUiEffect>(replay = 1)
+    val sideEffects: SharedFlow<RootUiEffect> = _sideEffects
 
     init {
         _state
-            .map { it.selectedTabId }
-            .onEach { selectedTabId ->
-                _sideEffects.emit(RootSideEffect.NavigateToTab(selectedTabId))
+            .map { it.selectedTab }
+            .onEach { selectedTab ->
+                _sideEffects.emit(RootUiEffect.NavigateToTab(selectedTab))
             }.launchIn(viewModelScope)
     }
 
-    fun onTabClicked(tab: TabBarTab) {
-        _state.update { it.copy(selectedTabId = tab.id) }
+    fun onTabClicked(tab: RootTab) {
+        _state.update { it.copy(selectedTab = tab) }
     }
-
-    private fun getInitialState() = RootUiState(
-        selectedTabId = RootTab.HOME.route,
-        tabs = listOf(
-            TabBarTab(
-                id = RootTab.HOME.route,
-                iconResId = R.drawable.ic_drop,
-            ),
-            TabBarTab(
-                id = RootTab.BOTTLE.route,
-                iconResId = R.drawable.ic_bottle,
-            ),
-            TabBarTab(
-                id = RootTab.PROFILE.route,
-                iconResId = R.drawable.ic_profile,
-            )
-        )
-    )
 }

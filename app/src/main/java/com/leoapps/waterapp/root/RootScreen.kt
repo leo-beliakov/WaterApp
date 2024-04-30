@@ -10,16 +10,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
+import com.leoapps.waterapp.common.utils.openTab
 import com.leoapps.waterapp.composables.tab_bar.TabBar
 import com.leoapps.waterapp.composables.tab_bar.TabBarColorScheme
 import com.leoapps.waterapp.composables.tab_bar.TabBarSize
 import com.leoapps.waterapp.home.HomeScreen
-import com.leoapps.waterapp.root.model.RootSideEffect
+import com.leoapps.waterapp.root.model.RootTab
+import com.leoapps.waterapp.root.model.RootUiEffect
 import com.leoapps.waterapp.water.ProfileScreen
 import com.leoapps.waterapp.water.WaterScreen
 
@@ -47,11 +48,11 @@ fun RootScreen(
                 ProfileScreen()
             }
         }
-        TabBar(
+        TabBar<RootTab>(
             size = TabBarSize.LARGE,
             colorScheme = TabBarColorScheme.PRIMARY,
             tabs = state.tabs,
-            selectedTabId = state.selectedTabId,
+            selectedTab = state.selectedTab,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(22.dp),
@@ -61,20 +62,8 @@ fun RootScreen(
 
     CollectEventsWithLifecycle(viewModel.sideEffects) { effect ->
         when (effect) {
-            is RootSideEffect.NavigateToTab -> {
-                navController.navigate(effect.route) {
-                    // Pop up to the start destination of the graph to
-                    // avoid building up a large stack of destination
-                    // on the back stack as users select items
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
-                    }
-                    // Avoid multiple copies of the same destination when
-                    // reselecting the same item
-                    launchSingleTop = true
-                    // Restore state when reselecting a previously selected item
-                    restoreState = true
-                }
+            is RootUiEffect.NavigateToTab -> {
+                navController.openTab(effect.tab.route)
             }
         }
     }

@@ -22,18 +22,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.leoapps.waterapp.R
-import com.leoapps.waterapp.home.HomeTimePeriodTabId
+import com.leoapps.waterapp.home.model.HomeTab
 import com.leoapps.waterapp.root.model.RootTab
 import com.leoapps.waterapp.ui.theme.WaterAppTheme
 
 @Composable
-fun TabBar(
-    selectedTabId: TabId,
-    tabs: List<TabBarTab>,
+fun <T : TabBarTab> TabBar(
+    selectedTab: T,
+    tabs: List<T>,
     size: TabBarSize = TabBarSize.MEDIUM,
     colorScheme: TabBarColorScheme = TabBarColorScheme.PRIMARY,
-    onTabClicked: (TabBarTab) -> Unit,
+    onTabClicked: (T) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -50,7 +49,7 @@ fun TabBar(
         tabs.forEach { tab ->
             Tab(
                 tab = tab,
-                isSelected = selectedTabId == tab.id,
+                isSelected = selectedTab == tab,
                 colorScheme = colorScheme,
                 onTabClicked = { onTabClicked(tab) },
                 modifier = Modifier.weight(1f)
@@ -105,19 +104,13 @@ private fun Tab(
 @Composable
 private fun TabBarTextPreview() {
     WaterAppTheme {
-        TabBar(
+        TabBar<HomeTab>(
             size = TabBarSize.MEDIUM,
-            colorScheme = TabBarColorScheme.INVERSED,
-            selectedTabId = HomeTimePeriodTabId.DAY.route,
+            colorScheme = TabBarColorScheme.INVERTED,
+            selectedTab = HomeTab.Day,
             tabs = listOf(
-                TabBarTab(
-                    id = HomeTimePeriodTabId.DAY.route,
-                    titleResId = R.string.home_navbar_tab_day,
-                ),
-                TabBarTab(
-                    id = HomeTimePeriodTabId.WEEK.route,
-                    titleResId = R.string.home_navbar_tab_week,
-                ),
+                HomeTab.Day,
+                HomeTab.Week
             ),
             onTabClicked = { }
         )
@@ -131,20 +124,11 @@ private fun TabBarIconPreview() {
         TabBar(
             size = TabBarSize.LARGE,
             colorScheme = TabBarColorScheme.PRIMARY,
-            selectedTabId = RootTab.HOME.route,
+            selectedTab = RootTab.Home,
             tabs = listOf(
-                TabBarTab(
-                    id = RootTab.HOME.route,
-                    iconResId = R.drawable.ic_drop,
-                ),
-                TabBarTab(
-                    id = RootTab.BOTTLE.route,
-                    iconResId = R.drawable.ic_bottle,
-                ),
-                TabBarTab(
-                    id = RootTab.PROFILE.route,
-                    iconResId = R.drawable.ic_profile,
-                ),
+                RootTab.Home,
+                RootTab.Bottle,
+                RootTab.Profile
             ),
             onTabClicked = { }
         )

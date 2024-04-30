@@ -1,7 +1,9 @@
 package com.leoapps.waterapp.home.model
 
-import com.leoapps.waterapp.composables.tab_bar.TabBarTab
-
 data class HomeUiState(
-    val tabs: List<TabBarTab>
+    val selectedTab: HomeTab = HomeTab.Day,
+    val tabs: List<HomeTab> = listOf(
+        HomeTab.Day,
+        HomeTab.Week
+    )
 )
