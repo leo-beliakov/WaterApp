@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
  * Events are collected and processed on the main thread.
  */
 @Composable
-fun <T> CollectEventsWithLifecycle(flow: Flow<T>, onEvent: (T) -> Unit) {
+fun <T> CollectEventsWithLifecycle(flow: Flow<T>, onEvent: suspend (T) -> Unit) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner, flow) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

@@ -14,8 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.home.day.composables.BeverageItem
-import com.leoapps.waterapp.home.day.composables.CircleProgress
+import com.leoapps.waterapp.home.day.composables.progress.CircleProgress
+import com.leoapps.waterapp.home.day.composables.progress.rememberProgressState
+import com.leoapps.waterapp.home.day.model.HomeDayUiEffect
 
 
 @Composable
@@ -23,6 +26,7 @@ fun HomeDayScreen(
     viewModel: HomeDayViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val circleProgressState = rememberProgressState(state.progressState.progress)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -32,7 +36,7 @@ fun HomeDayScreen(
         CircleProgress(
             title = state.progressState.percentText,
             subtitle = state.progressState.consumedText,
-            progress = state.progressState.progress,
+            progressState = circleProgressState,
             modifier = Modifier.size(300.dp),
         )
         LazyVerticalGrid(
@@ -48,6 +52,15 @@ fun HomeDayScreen(
                     beverageItem = beverage,
                     onClick = viewModel::onBeverageClick
                 )
+            }
+        }
+    }
+
+
+    CollectEventsWithLifecycle(viewModel.sideEffects) { effect ->
+        when (effect) {
+            is HomeDayUiEffect.AnimateProgressTo -> {
+                circleProgressState.animateProgressTo(effect.progress)
             }
         }
     }

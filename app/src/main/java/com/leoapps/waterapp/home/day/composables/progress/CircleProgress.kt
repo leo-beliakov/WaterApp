@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.home.day.composables
+package com.leoapps.waterapp.home.day.composables.progress
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -31,7 +31,7 @@ import kotlin.math.sin
 fun CircleProgress(
     title: String,
     subtitle: String,
-    progress: Float,
+    progressState: ProgressState = rememberProgressState(),
     modifier: Modifier = Modifier
 ) {
     val textMeasurer = rememberTextMeasurer()
@@ -68,7 +68,7 @@ fun CircleProgress(
                 val circleSize = Size(size.width - strokeWidth, size.height - strokeWidth)
 
                 //Progress circle calculations
-                val progressAngle = 360 * progress
+                val progressAngle = 360 * progressState.value
 
                 //Decoration circle calculations
                 val decorationCircleRadius = strokeWidthHalf * 0.6f
@@ -155,7 +155,7 @@ private fun CircleProgressPreview() {
     CircleProgress(
         title = "50%",
         subtitle = "1245 ml",
-        progress = 0.25f,
+        progressState = rememberProgressState(0.25f),
         modifier = Modifier.size(300.dp),
     )
 }
