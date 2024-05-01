@@ -1,12 +1,17 @@
 package com.leoapps.waterapp.home.day.model
 
-class DayUiState(
+data class DayUiState(
     val progressState: ProgressState,
     val beverageItems: List<BeverageItem>
 ) {
     data class ProgressState(
-        val percentText: String,
-        val goalText: String,
-        val progress: Float
+        val percentText: String = "",
+        val consumedText: String = "",
+        val progress: Float = 0f
     )
 }
+
+data class DayProgressState(
+    val goalMl: Int,
+    val consumedMl: Int = 0
+)

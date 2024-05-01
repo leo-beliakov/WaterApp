@@ -31,7 +31,7 @@ fun HomeDayScreen(
     ) {
         CircleProgress(
             title = state.progressState.percentText,
-            subtitle = state.progressState.goalText,
+            subtitle = state.progressState.consumedText,
             progress = state.progressState.progress,
             modifier = Modifier.size(300.dp),
         )

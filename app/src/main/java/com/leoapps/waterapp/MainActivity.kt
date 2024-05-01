@@ -3,7 +3,6 @@ package com.leoapps.waterapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import com.leoapps.waterapp.root.RootScreen
 import com.leoapps.waterapp.ui.theme.WaterAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -11,13 +10,25 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
             WaterAppTheme {
-                // A surface container using the 'background' color from the theme
                 RootScreen()
             }
         }
     }
 }
+
+//TODO DONE:
+//1.1. Make beverages buttons work - DONE
+
+//TODO:
+//1.2. Make beverages buttons animated when pressed
+//2. Make progress change
+//3. Make progress change animated
+//4. Make progress animated when the screen first shown
+//5. Make vibrations on buttons clicks
+//6. Create a button for welcome screen
+//7. Create a pulsation animation for that button
+//8. Make current state persistent over sessions
+//9. Think about corner cases like negative balance or balance > 100%
