@@ -70,6 +70,9 @@ dependencies {
     implementation(libs.hilt.compose)
     kapt(libs.hilt.compiler)
 
+    //Data Store
+    implementation(libs.androidx.datastore)
+
     //Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

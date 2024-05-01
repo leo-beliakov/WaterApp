@@ -1,5 +1,9 @@
 package com.leoapps.waterapp.home.day
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leoapps.waterapp.home.day.model.BeverageItem
@@ -19,7 +23,9 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 @HiltViewModel
-class HomeDayViewModel @Inject constructor() : ViewModel() {
+class HomeDayViewModel @Inject constructor(
+    private val dataStore: DataStore<Preferences>
+) : ViewModel() {
 
     private val goalState = MutableStateFlow(getInitialGoalState())
 
@@ -43,6 +49,16 @@ class HomeDayViewModel @Inject constructor() : ViewModel() {
                     )
                 }
             }.launchIn(viewModelScope)
+
+        dataStore.data
+            .onEach { prefs ->
+                val newWaterBalance = prefs[PROGRESS_KEY] ?: 0
+                val updatedProgress = newWaterBalance.toFloat() / goalState.value.goalMl
+
+                goalState.update { it.copy(consumedMl = prefs[PROGRESS_KEY] ?: 0) }
+                _sideEffects.emit(HomeDayUiEffect.AnimateProgressTo(updatedProgress))
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun getInitialGoalState() = DayProgressState(
@@ -55,12 +71,17 @@ class HomeDayViewModel @Inject constructor() : ViewModel() {
     )
 
     fun onBeverageClick(beverageItem: BeverageItem) {
-        goalState.update {
-            it.copy(consumedMl = it.consumedMl + beverageItem.waterBalanceDelta)
-        }
+        val currentState = goalState.value
+        val updatedWaterBalance = currentState.consumedMl + beverageItem.waterBalanceDelta
+
         viewModelScope.launch {
-            val updatedProgress = goalState.value.consumedMl.toFloat() / goalState.value.goalMl
-            _sideEffects.emit(HomeDayUiEffect.AnimateProgressTo(updatedProgress))
+            dataStore.edit { prefs ->
+                prefs[PROGRESS_KEY] = updatedWaterBalance
+            }
         }
+    }
+
+    companion object {
+        private val PROGRESS_KEY = intPreferencesKey("progress_key")
     }
 }
