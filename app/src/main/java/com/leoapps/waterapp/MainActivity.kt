@@ -31,13 +31,13 @@ class MainActivity : ComponentActivity() {
 //2. Make progress change
 //3. Make progress change animated
 //4. Make progress animated when the screen first shown
-//8. Make current state persistent over sessions
-//11. Refactor persistance code (Repo, etc) + clean up the VM
-
-//TODO:
-//1.2. Make beverages buttons animated when pressed
 //5. Make vibrations on buttons clicks
 //6. Create a button for welcome screen
 //7. Create a pulsation animation for that button
-//9. Think about corner cases like negative balance or balance > 100%
+//8. Make current state persistent over sessions
 //10. Make the size of the circle progress composable adaptive
+//11. Refactor persistance code (Repo, etc) + clean up the VM
+
+//TODO:
+//9. Think about corner cases like negative balance or balance > 100%
+//11. Predefined TextStyles

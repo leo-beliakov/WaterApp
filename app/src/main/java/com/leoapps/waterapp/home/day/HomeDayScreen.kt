@@ -3,7 +3,7 @@ package com.leoapps.waterapp.home.day
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -37,7 +37,7 @@ fun HomeDayScreen(
             title = state.progressState.percentText,
             subtitle = state.progressState.consumedText,
             progressState = circleProgressState,
-            modifier = Modifier.size(300.dp),
+            modifier = Modifier.fillMaxWidth(0.7f),
         )
         LazyVerticalGrid(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
