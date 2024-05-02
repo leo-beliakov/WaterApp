@@ -1,11 +1,12 @@
-package com.leoapps.waterapp.common.data
+package com.leoapps.waterapp.common.waterbalance.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.leoapps.waterapp.common.domain.WaterBalanceRepository
+import com.leoapps.waterapp.common.waterbalance.data.WaterBalanceRepositoryImpl
+import com.leoapps.waterapp.common.waterbalance.domain.WaterBalanceRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

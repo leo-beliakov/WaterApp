@@ -1,10 +1,10 @@
-package com.leoapps.waterapp.common.data
+package com.leoapps.waterapp.common.waterbalance.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import com.leoapps.waterapp.common.domain.WaterBalanceRepository
+import com.leoapps.waterapp.common.waterbalance.domain.WaterBalanceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

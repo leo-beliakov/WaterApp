@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.common.domain
+package com.leoapps.waterapp.common.waterbalance.domain
 
 import kotlinx.coroutines.flow.Flow
 

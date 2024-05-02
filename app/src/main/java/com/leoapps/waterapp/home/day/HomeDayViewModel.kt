@@ -2,7 +2,8 @@ package com.leoapps.waterapp.home.day
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.leoapps.waterapp.common.domain.WaterBalanceRepository
+import com.leoapps.waterapp.common.vibrator.domain.WaterAppVibrator
+import com.leoapps.waterapp.common.waterbalance.domain.WaterBalanceRepository
 import com.leoapps.waterapp.home.day.model.BeverageItem
 import com.leoapps.waterapp.home.day.model.DayProgressState
 import com.leoapps.waterapp.home.day.model.DayUiState
@@ -21,7 +22,8 @@ import kotlin.math.roundToInt
 
 @HiltViewModel
 class HomeDayViewModel @Inject constructor(
-    private val repository: WaterBalanceRepository
+    private val repository: WaterBalanceRepository,
+    private val vibrator: WaterAppVibrator
 ) : ViewModel() {
 
     private val goalState = MutableStateFlow(getInitialGoalState())
@@ -67,6 +69,7 @@ class HomeDayViewModel @Inject constructor(
 
     fun onBeverageClick(beverageItem: BeverageItem) {
         viewModelScope.launch {
+            vibrator.vibrateOnClick()
             val updatedWaterBalance = goalState.value.consumedMl + beverageItem.waterBalanceDelta
             repository.setWaterBalance(updatedWaterBalance)
         }
