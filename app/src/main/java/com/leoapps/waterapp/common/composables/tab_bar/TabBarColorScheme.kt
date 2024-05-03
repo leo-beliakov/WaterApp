@@ -1,8 +1,8 @@
-package com.leoapps.waterapp.composables.tab_bar
+package com.leoapps.waterapp.common.composables.tab_bar
 
 import androidx.compose.ui.graphics.Color
-import com.leoapps.waterapp.ui.theme.NavyDark
-import com.leoapps.waterapp.ui.theme.White
+import com.leoapps.waterapp.common.presentation.theme.NavyDark
+import com.leoapps.waterapp.common.presentation.theme.White
 
 enum class TabBarColorScheme(
     val primaryColor: Color,

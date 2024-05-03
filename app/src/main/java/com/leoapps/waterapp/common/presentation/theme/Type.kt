@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.ui.theme
+package com.leoapps.waterapp.common.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

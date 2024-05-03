@@ -20,10 +20,10 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.leoapps.waterapp.ui.theme.Gray
-import com.leoapps.waterapp.ui.theme.PurpleMain
-import com.leoapps.waterapp.ui.theme.PurpleOpaque
-import com.leoapps.waterapp.ui.theme.White
+import com.leoapps.waterapp.common.presentation.theme.Gray
+import com.leoapps.waterapp.common.presentation.theme.PurpleMain
+import com.leoapps.waterapp.common.presentation.theme.PurpleOpaque
+import com.leoapps.waterapp.common.presentation.theme.White
 import kotlin.math.cos
 import kotlin.math.sin
 

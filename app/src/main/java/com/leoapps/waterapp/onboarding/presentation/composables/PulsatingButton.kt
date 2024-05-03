@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.welcome.presentation.composables
+package com.leoapps.waterapp.onboarding.presentation.composables
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.InfiniteRepeatableSpec
@@ -26,11 +26,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.leoapps.waterapp.ui.theme.PurpleMain
-import com.leoapps.waterapp.ui.theme.PurpleOpaque
-import com.leoapps.waterapp.ui.theme.WaterAppTheme
+import com.leoapps.waterapp.common.presentation.theme.PurpleMain
+import com.leoapps.waterapp.common.presentation.theme.PurpleOpaque
+import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
 
-private const val BUTTON_DEFAULT_SIZE_DP = 50
+private const val BUTTON_DEFAULT_SIZE_DP = 70
 private const val PULSATION_ANIMATION_DURATION = 1100
 
 @Composable
@@ -51,6 +51,8 @@ fun PulsatingButton(
             icon = icon,
             contentDescription = contentDescription,
             onClick = onClick,
+            modifier = Modifier.size(BUTTON_DEFAULT_SIZE_DP.dp)
+
         )
     }
 }
@@ -60,10 +62,10 @@ private fun CircleButton(
     icon: ImageVector = Icons.Default.ArrowForward,
     contentDescription: String? = null,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
-            .size(BUTTON_DEFAULT_SIZE_DP.dp)
+        modifier = modifier
             .clip(CircleShape)
             .background(color = PurpleMain)
             .clickable(onClick = onClick)
@@ -74,7 +76,7 @@ private fun CircleButton(
             tint = Color.White,
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(16.dp)
+                .size(22.dp)
         )
     }
 }

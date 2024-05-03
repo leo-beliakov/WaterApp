@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.composables.tab_bar
+package com.leoapps.waterapp.common.composables.tab_bar
 
 interface TabBarTab {
     val route: String

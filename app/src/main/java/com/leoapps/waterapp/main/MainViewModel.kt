@@ -1,10 +1,10 @@
-package com.leoapps.waterapp.root
+package com.leoapps.waterapp.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.leoapps.waterapp.root.model.RootTab
-import com.leoapps.waterapp.root.model.RootUiEffect
-import com.leoapps.waterapp.root.model.RootUiState
+import com.leoapps.waterapp.main.model.MainTab
+import com.leoapps.waterapp.main.model.MainUiEffect
+import com.leoapps.waterapp.main.model.MainUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,23 +17,23 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class RootViewModel @Inject constructor() : ViewModel() {
+class MainViewModel @Inject constructor() : ViewModel() {
 
-    private val _state = MutableStateFlow(RootUiState())
+    private val _state = MutableStateFlow(MainUiState())
     val state = _state.asStateFlow()
 
-    private val _sideEffects = MutableSharedFlow<RootUiEffect>(replay = 1)
-    val sideEffects: SharedFlow<RootUiEffect> = _sideEffects
+    private val _sideEffects = MutableSharedFlow<MainUiEffect>(replay = 1)
+    val sideEffects: SharedFlow<MainUiEffect> = _sideEffects
 
     init {
         _state
             .map { it.selectedTab }
             .onEach { selectedTab ->
-                _sideEffects.emit(RootUiEffect.NavigateToTab(selectedTab))
+                _sideEffects.emit(MainUiEffect.NavigateToTab(selectedTab))
             }.launchIn(viewModelScope)
     }
 
-    fun onTabClicked(tab: RootTab) {
+    fun onTabClicked(tab: MainTab) {
         _state.update { it.copy(selectedTab = tab) }
     }
 }

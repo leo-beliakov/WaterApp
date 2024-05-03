@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.ui.theme
+package com.leoapps.waterapp.common.presentation.theme
 
 import android.app.Activity
 import android.graphics.Color

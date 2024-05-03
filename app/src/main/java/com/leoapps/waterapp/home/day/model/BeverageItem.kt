@@ -4,9 +4,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.leoapps.waterapp.R
-import com.leoapps.waterapp.ui.theme.Coffee
-import com.leoapps.waterapp.ui.theme.Green
-import com.leoapps.waterapp.ui.theme.PurpleLight
+import com.leoapps.waterapp.common.presentation.theme.Coffee
+import com.leoapps.waterapp.common.presentation.theme.Green
+import com.leoapps.waterapp.common.presentation.theme.PurpleLight
 
 enum class BeverageItem(
     @DrawableRes val iconResId: Int,

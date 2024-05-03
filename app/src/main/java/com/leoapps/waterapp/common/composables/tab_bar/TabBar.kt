@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.composables.tab_bar
+package com.leoapps.waterapp.common.composables.tab_bar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,9 +26,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
 import com.leoapps.waterapp.home.root.model.HomeTab
-import com.leoapps.waterapp.root.model.RootTab
-import com.leoapps.waterapp.ui.theme.WaterAppTheme
+import com.leoapps.waterapp.main.model.MainTab
 
 @Composable
 fun <T : TabBarTab> TabBar(
@@ -136,11 +136,11 @@ private fun TabBarIconPreview() {
         TabBar(
             size = TabBarSize.LARGE,
             colorScheme = TabBarColorScheme.PRIMARY,
-            selectedTab = RootTab.Home,
+            selectedTab = MainTab.Home,
             tabs = listOf(
-                RootTab.Home,
-                RootTab.Bottle,
-                RootTab.Profile
+                MainTab.Home,
+                MainTab.Bottle,
+                MainTab.Profile
             ),
             onTabClicked = { }
         )

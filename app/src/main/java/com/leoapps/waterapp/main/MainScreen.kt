@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.root
+package com.leoapps.waterapp.main
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -16,20 +16,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.leoapps.waterapp.common.composables.tab_bar.TabBar
+import com.leoapps.waterapp.common.composables.tab_bar.TabBarColorScheme
+import com.leoapps.waterapp.common.composables.tab_bar.TabBarSize
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.common.utils.openTab
-import com.leoapps.waterapp.composables.tab_bar.TabBar
-import com.leoapps.waterapp.composables.tab_bar.TabBarColorScheme
-import com.leoapps.waterapp.composables.tab_bar.TabBarSize
 import com.leoapps.waterapp.home.root.HomeScreen
-import com.leoapps.waterapp.root.model.RootTab
-import com.leoapps.waterapp.root.model.RootUiEffect
+import com.leoapps.waterapp.main.model.MainTab
+import com.leoapps.waterapp.main.model.MainUiEffect
 import com.leoapps.waterapp.water.ProfileScreen
 import com.leoapps.waterapp.water.WaterScreen
 
 @Composable
-fun RootScreen(
-    viewModel: RootViewModel = hiltViewModel()
+fun MainScreen(
+    viewModel: MainViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = rememberNavController()
@@ -51,7 +51,7 @@ fun RootScreen(
                 ProfileScreen()
             }
         }
-        TabBar<RootTab>(
+        TabBar<MainTab>(
             size = TabBarSize.LARGE,
             colorScheme = TabBarColorScheme.PRIMARY,
             tabs = state.tabs,
@@ -66,7 +66,7 @@ fun RootScreen(
 
     CollectEventsWithLifecycle(viewModel.sideEffects) { effect ->
         when (effect) {
-            is RootUiEffect.NavigateToTab -> {
+            is MainUiEffect.NavigateToTab -> {
                 navController.openTab(effect.tab.route)
             }
         }

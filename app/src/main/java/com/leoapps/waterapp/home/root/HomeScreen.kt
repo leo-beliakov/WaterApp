@@ -23,16 +23,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.leoapps.waterapp.R
+import com.leoapps.waterapp.common.composables.tab_bar.TabBar
+import com.leoapps.waterapp.common.composables.tab_bar.TabBarColorScheme
+import com.leoapps.waterapp.common.composables.tab_bar.TabBarSize
+import com.leoapps.waterapp.common.presentation.theme.NavyDark
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.common.utils.openTab
-import com.leoapps.waterapp.composables.tab_bar.TabBar
-import com.leoapps.waterapp.composables.tab_bar.TabBarColorScheme
-import com.leoapps.waterapp.composables.tab_bar.TabBarSize
 import com.leoapps.waterapp.home.day.HomeDayScreen
 import com.leoapps.waterapp.home.root.model.HomeTab
 import com.leoapps.waterapp.home.root.model.HomeUiEffect
 import com.leoapps.waterapp.home.week.HomeWeekScreen
-import com.leoapps.waterapp.ui.theme.NavyDark
 
 @Composable
 fun HomeScreen(
