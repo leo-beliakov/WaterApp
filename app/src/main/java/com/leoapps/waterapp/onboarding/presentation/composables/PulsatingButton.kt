@@ -52,7 +52,6 @@ fun PulsatingButton(
             contentDescription = contentDescription,
             onClick = onClick,
             modifier = Modifier.size(BUTTON_DEFAULT_SIZE_DP.dp)
-
         )
     }
 }
