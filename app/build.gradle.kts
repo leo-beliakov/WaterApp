@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     kotlin("kapt")
     alias(libs.plugins.daggerHilt)
+    alias(libs.plugins.googleGms)
+    alias(libs.plugins.crashlytics)
 }
 
 android {
@@ -72,6 +74,11 @@ dependencies {
 
     //Data Store
     implementation(libs.androidx.datastore)
+
+    //Firebase
+    implementation(platform(libs.google.firebase.bom))
+    implementation(libs.google.firebase.analytics)
+    implementation(libs.google.firebase.crashlytics)
 
     //Tests
     testImplementation(libs.junit)

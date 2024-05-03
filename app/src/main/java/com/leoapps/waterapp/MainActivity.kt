@@ -41,11 +41,12 @@ class MainActivity : ComponentActivity() {
 //11. Refactor persistance code (Repo, etc) + clean up the VM
 //13. Onboarding screen UI
 //14. Onboarding screen showing logic
+//17. Insets for Onboarding screen
+//16. Remove Splash and Onboarding from the back stack
 
 //TODO:
 //9. Think about corner cases like negative balance or balance > 100%
 //11. Predefined TextStyles
 //12. Implement a weekly/monthly chart
 //15. Screen transition animations
-//16. Remove Splash and Onboarding from the back stack
-//17. Insets for Onboarding screen
+//16. Introduce Navigator classes

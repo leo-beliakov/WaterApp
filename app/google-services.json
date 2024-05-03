@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1006655469675",
+    "project_id": "waterapp-53d20",
+    "storage_bucket": "waterapp-53d20.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006655469675:android:ada695d9b56e063cded92e",
+        "android_client_info": {
+          "package_name": "com.leoapps.waterapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC92Nu1OSpHKEuje72fs2bc_i0QaqwZeJE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
