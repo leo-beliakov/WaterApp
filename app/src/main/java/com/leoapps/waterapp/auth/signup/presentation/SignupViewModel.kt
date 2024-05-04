@@ -22,7 +22,7 @@ class SignupViewModel @Inject constructor(
     private val _state = MutableStateFlow(SignupUiState())
     val state = _state.asStateFlow()
 
-    private val _sideEffects = MutableSharedFlow<SignupUiEffect>(replay = 1)
+    private val _sideEffects = MutableSharedFlow<SignupUiEffect>()
     val sideEffects: SharedFlow<SignupUiEffect> = _sideEffects
 
     fun onNameUpdated(value: String) {

@@ -19,7 +19,7 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     private val _state = MutableStateFlow(LoginUiState())
     val state = _state.asStateFlow()
 
-    private val _sideEffects = MutableSharedFlow<LoginUiEffect>(replay = 1)
+    private val _sideEffects = MutableSharedFlow<LoginUiEffect>()
     val sideEffects: SharedFlow<LoginUiEffect> = _sideEffects
 
     fun onPasswordUpdated(value: String) {

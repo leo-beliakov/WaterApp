@@ -22,7 +22,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     private val _state = MutableStateFlow(MainUiState())
     val state = _state.asStateFlow()
 
-    private val _sideEffects = MutableSharedFlow<MainUiEffect>(replay = 1)
+    private val _sideEffects = MutableSharedFlow<MainUiEffect>()
     val sideEffects: SharedFlow<MainUiEffect> = _sideEffects
 
     init {

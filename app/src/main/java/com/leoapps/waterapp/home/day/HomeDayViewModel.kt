@@ -31,7 +31,7 @@ class HomeDayViewModel @Inject constructor(
     private val _state = MutableStateFlow(getInitialUiState())
     val state = _state.asStateFlow()
 
-    private val _sideEffects = MutableSharedFlow<HomeDayUiEffect>(replay = 1)
+    private val _sideEffects = MutableSharedFlow<HomeDayUiEffect>()
     val sideEffects: SharedFlow<HomeDayUiEffect> = _sideEffects
 
     init {

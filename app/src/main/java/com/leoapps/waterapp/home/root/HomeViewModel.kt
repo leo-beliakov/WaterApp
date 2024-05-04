@@ -21,7 +21,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     private val _state = MutableStateFlow(HomeUiState())
     val state = _state.asStateFlow()
 
-    private val _sideEffects = MutableSharedFlow<HomeUiEffect>(replay = 1)
+    private val _sideEffects = MutableSharedFlow<HomeUiEffect>()
     val sideEffects: SharedFlow<HomeUiEffect> = _sideEffects
 
     init {

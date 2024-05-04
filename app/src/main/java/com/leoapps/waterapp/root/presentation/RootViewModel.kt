@@ -17,7 +17,7 @@ class RootViewModel @Inject constructor(
     private val setOnboardingShown: SetOnboardingShownUseCase
 ) : ViewModel() {
 
-    private val _sideEffects = MutableSharedFlow<RootUiEffect>(replay = 1)
+    private val _sideEffects = MutableSharedFlow<RootUiEffect>()
     val sideEffects: SharedFlow<RootUiEffect> = _sideEffects
 
     init {
