@@ -61,7 +61,7 @@ fun LoginScreen(
 
     CollectEventsWithLifecycle(viewModel.sideEffects) { effect ->
         when (effect) {
-            LoginUiEffect.GoBack -> navigator.openGoBack()
+            LoginUiEffect.GoBack -> navigator.goBack()
             LoginUiEffect.OpenSignUp -> navigator.openSignup()
         }
     }

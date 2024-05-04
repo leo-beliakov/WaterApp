@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.leoapps.waterapp.auth.login.presentation.LoginScreen
 import com.leoapps.waterapp.auth.login.presentation.navigation.LoginNavigator
 import com.leoapps.waterapp.auth.signup.presentation.SignupScreen
+import com.leoapps.waterapp.auth.signup.presentation.navigation.SignupNavigator
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.main.MainScreen
 import com.leoapps.waterapp.onboarding.presentation.OnboardingScreen
@@ -45,7 +46,9 @@ fun RootScreen(
             )
         }
         composable("signup") {
-            SignupScreen()
+            SignupScreen(
+                navigator = SignupNavigator(navController)
+            )
         }
     }
 

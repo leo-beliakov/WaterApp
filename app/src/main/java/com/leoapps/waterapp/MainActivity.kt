@@ -54,6 +54,7 @@ class MainActivity : ComponentActivity() {
 //12. Implement a weekly/monthly chart
 //15. Screen transition animations
 //16. Simple Profile UI
+//-. Simple Signup Screen UI
 //18. Auth logic
 //19. Retrieving profile logic
 //20. Storing data about the progress in Firebase
