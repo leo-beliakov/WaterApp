@@ -7,11 +7,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.leoapps.waterapp.auth.login.presentation.LoginScreen
+import com.leoapps.waterapp.auth.login.presentation.navigation.LoginNavigator
 import com.leoapps.waterapp.auth.signup.presentation.SignupScreen
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.main.MainScreen
 import com.leoapps.waterapp.onboarding.presentation.OnboardingScreen
-import com.leoapps.waterapp.root.presentation.model.RootUiEffect
 import com.leoapps.waterapp.root.presentation.navigator.RootNavigator
 import com.leoapps.waterapp.splash.presentation.SplashScreen
 
@@ -24,7 +24,7 @@ fun RootScreen(
 
     NavHost(
         navController = navController,
-        startDestination = "splash",
+        startDestination = "login",
     ) {
         composable("splash") {
             SplashScreen()
@@ -41,7 +41,7 @@ fun RootScreen(
         }
         composable("login") {
             LoginScreen(
-                onSignupClicked = { navigator.openSignup() }
+                navigator = LoginNavigator(navController)
             )
         }
         composable("signup") {
@@ -50,9 +50,9 @@ fun RootScreen(
     }
 
     CollectEventsWithLifecycle(viewModel.sideEffects) { effects ->
-        when (effects) {
-            RootUiEffect.GoToMain -> navigator.openMain()
-            RootUiEffect.GoToOnboarding -> navigator.openOnboarding()
-        }
+//        when (effects) {
+//            RootUiEffect.GoToMain -> navigator.openMain()
+//            RootUiEffect.GoToOnboarding -> navigator.openOnboarding()
+//        }
     }
 }
