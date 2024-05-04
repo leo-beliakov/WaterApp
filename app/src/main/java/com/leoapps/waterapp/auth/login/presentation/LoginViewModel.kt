@@ -44,4 +44,11 @@ class LoginViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun onGoogleLoginClicked() {
+
+    }
+
+    fun onFacebookLoginClicked() {
+
+    }
 }
