@@ -6,6 +6,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.leoapps.waterapp.auth.login.presentation.LoginScreen
+import com.leoapps.waterapp.auth.signup.presentation.SignupScreen
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.main.MainScreen
 import com.leoapps.waterapp.onboarding.presentation.OnboardingScreen
@@ -15,7 +17,7 @@ import com.leoapps.waterapp.splash.presentation.SplashScreen
 
 @Composable
 fun RootScreen(
-    viewModel: RootViewModel = hiltViewModel()
+    viewModel: RootViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
     val navigator = remember { RootNavigator(navController) }
@@ -33,7 +35,17 @@ fun RootScreen(
             )
         }
         composable("main") {
-            MainScreen()
+            MainScreen(
+                onLoginClicked = { navigator.openAuth() }
+            )
+        }
+        composable("login") {
+            LoginScreen(
+                onSignupClicked = { navigator.openSignup() }
+            )
+        }
+        composable("signup") {
+            SignupScreen()
         }
     }
 

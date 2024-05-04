@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.water
+package com.leoapps.waterapp.auth.signup.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun ProfileScreen() {
+fun SignupScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()

@@ -18,4 +18,16 @@ class RootNavigator(
             launchSingleTop = true
         }
     }
+
+    fun openAuth() {
+        navController.navigate("login") {
+            launchSingleTop = true
+        }
+    }
+
+    fun openSignup() {
+        navController.navigate("signup") {
+            launchSingleTop = true
+        }
+    }
 }

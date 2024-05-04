@@ -29,7 +29,8 @@ import com.leoapps.waterapp.water.WaterScreen
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
+    onLoginClicked: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = rememberNavController()
@@ -48,7 +49,9 @@ fun MainScreen(
                 WaterScreen()
             }
             composable("profile") {
-                ProfileScreen()
+                ProfileScreen(
+                    onLoginClicked = onLoginClicked
+                )
             }
         }
         TabBar<MainTab>(

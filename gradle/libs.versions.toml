@@ -27,6 +27,7 @@ androidx-datastore = { group = "androidx.datastore", name = "datastore-preferenc
 google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
 google-firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 google-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+google-firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
