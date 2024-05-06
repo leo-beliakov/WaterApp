@@ -59,6 +59,7 @@ fun SignupScreen(
     CollectEventsWithLifecycle(viewModel.sideEffects) { effect ->
         when (effect) {
             SignupUiEffect.GoBack -> navigator.goBack()
+            SignupUiEffect.CloseAuth -> navigator.closeAuth()
         }
     }
 }

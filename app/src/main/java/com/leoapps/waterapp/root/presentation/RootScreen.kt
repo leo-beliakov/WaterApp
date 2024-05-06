@@ -13,8 +13,10 @@ import com.leoapps.waterapp.auth.signup.presentation.navigation.SignupNavigator
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.main.MainScreen
 import com.leoapps.waterapp.onboarding.presentation.OnboardingScreen
+import com.leoapps.waterapp.profile.presentation.navigation.ProfileNavigator
 import com.leoapps.waterapp.root.presentation.navigator.RootNavigator
 import com.leoapps.waterapp.splash.presentation.SplashScreen
+import com.leoapps.waterapp.water.ProfileScreen
 
 @Composable
 fun RootScreen(
@@ -25,7 +27,7 @@ fun RootScreen(
 
     NavHost(
         navController = navController,
-        startDestination = "signup",
+        startDestination = "profile",
     ) {
         composable("splash") {
             SplashScreen()
@@ -48,6 +50,11 @@ fun RootScreen(
         composable("signup") {
             SignupScreen(
                 navigator = SignupNavigator(navController)
+            )
+        }
+        composable("profile") {
+            ProfileScreen(
+                navigator = ProfileNavigator(navController)
             )
         }
     }

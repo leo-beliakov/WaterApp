@@ -24,6 +24,7 @@ import com.leoapps.waterapp.common.utils.openTab
 import com.leoapps.waterapp.home.root.HomeScreen
 import com.leoapps.waterapp.main.model.MainTab
 import com.leoapps.waterapp.main.model.MainUiEffect
+import com.leoapps.waterapp.profile.presentation.navigation.ProfileNavigator
 import com.leoapps.waterapp.water.ProfileScreen
 import com.leoapps.waterapp.water.WaterScreen
 
@@ -50,7 +51,7 @@ fun MainScreen(
             }
             composable("profile") {
                 ProfileScreen(
-                    onLoginClicked = onLoginClicked
+                    navigator = ProfileNavigator(navController)
                 )
             }
         }

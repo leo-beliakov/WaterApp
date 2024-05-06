@@ -9,4 +9,8 @@ class SignupNavigator(
     fun goBack() {
         navController.popBackStack()
     }
+
+    fun closeAuth() {
+        navController.popBackStack("login", true)
+    }
 }

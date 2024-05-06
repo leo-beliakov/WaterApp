@@ -12,7 +12,8 @@
     <string name="onboarding_title">Let\'s keep a healthy amount of water</string>
     <string name="onboarding_subtitle">Keep track of how much water you drink and plan for it</string>
 
-    <string name="login_button_login">Log in</string>
+    <string name="common_login">Log In</string>
+    <string name="common_logout">Log Out</string>
 
     <string name="sugnup_button_create">Create Account</string>
 

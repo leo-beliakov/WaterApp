@@ -109,6 +109,9 @@ class SignupViewModel @Inject constructor(
                     )
                 )
             }
+
+            //todo check if the signup was successfull
+            _sideEffects.emit(SignupUiEffect.CloseAuth)
         }
     }
 

@@ -1,11 +1,15 @@
 package com.leoapps.waterapp.auth.common.data
 
-import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
 import com.leoapps.waterapp.auth.common.domain.AuthRepository
+import com.leoapps.waterapp.auth.common.domain.model.User
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -13,54 +17,52 @@ import javax.inject.Inject
 class FirebaseAuthRepository @Inject constructor() : AuthRepository {
 
     private val auth by lazy { Firebase.auth }
+    private val currentUser = MutableStateFlow<User?>(null)
+
+    init {
+        auth.addAuthStateListener { authInfo ->
+            currentUser.value = authInfo.currentUser?.let { firebaseUser ->
+                User(
+                    id = firebaseUser.uid,
+                    name = firebaseUser.displayName
+                )
+            }
+        }
+    }
+
+    override fun getCurrentUserAsFlow(): Flow<User?> {
+        return currentUser.asStateFlow()
+    }
 
     override fun isAuthenticated(): Boolean {
         return auth.currentUser != null
     }
 
+    override suspend fun logoutUser() = withContext(Dispatchers.IO) {
+        auth.signOut()
+    }
+
+    //FirebaseAuthUserCollisionException - The email address is already in use by another account.
+    //FirebaseNetworkException - No connection
     override suspend fun signupUser(
         name: String,
         email: String,
         password: String
     ) = withContext(Dispatchers.IO) {
-        Log.d("MyTag", "signupUser")
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnSuccessListener {
-                Log.d("MyTag", "auth task successed")
-            }
-            .addOnCanceledListener {
-                Log.d("MyTag", "auth task canceled")
-            }
-            .addOnFailureListener { ex ->
-                Log.d("MyTag", "auth task failure $ex")
-            }
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d("MyTag", "auth task successful")
-
-                } else {
-                    Log.d("MyTag", "auth task failed = ${task.exception}")
-                }
-            }
-
-        Log.d("MyTag", "signupUser finish")
+        //todo track Result of the operation
+        val signupResult = auth.createUserWithEmailAndPassword(email, password).asSuspend()
+        val profileUpdates = userProfileChangeRequest {
+            displayName = name
+        }
+        signupResult.user?.updateProfile(profileUpdates)?.asSuspend()
         return@withContext true
     }
 
     suspend fun <T> Task<T>.asSuspend() = suspendCancellableCoroutine<T> { continuation ->
-        this.addOnCanceledListener {
-            Log.d("MyTag", "auth task canceled")
-        }
-        this.addOnFailureListener { ex ->
-            Log.d("MyTag", "auth task failure $ex")
-        }
         this.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                Log.d("MyTag", "auth task successful")
                 continuation.resumeWith(Result.success(task.result))
-
             } else {
-                Log.d("MyTag", "auth task failed = ${task.exception}")
                 val exception = task.exception ?: UnknownError("Task failed")
                 continuation.resumeWith(Result.failure(exception))
             }

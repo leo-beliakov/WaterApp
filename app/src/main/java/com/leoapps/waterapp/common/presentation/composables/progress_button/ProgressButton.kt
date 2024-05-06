@@ -42,17 +42,17 @@ private class ButtonStateProvider : PreviewParameterProvider<ProgressButtonState
         ProgressButtonState(
             isEnabled = true,
             isLoading = false,
-            textResId = R.string.login_button_login
+            textResId = R.string.common_login
         ),
         ProgressButtonState(
             isEnabled = false,
             isLoading = false,
-            textResId = R.string.login_button_login
+            textResId = R.string.common_login
         ),
         ProgressButtonState(
             isEnabled = true,
             isLoading = true,
-            textResId = R.string.login_button_login
+            textResId = R.string.common_login
         ),
     ).asSequence()
 }
