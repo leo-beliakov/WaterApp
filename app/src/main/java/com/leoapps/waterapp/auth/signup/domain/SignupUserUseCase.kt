@@ -4,8 +4,6 @@ import com.leoapps.waterapp.auth.common.domain.AuthRepository
 import javax.inject.Inject
 
 class SignupUserUseCase @Inject constructor(
-    private val validateEmail: ValidateEmailUseCase,
-    private val validatePassword: ValidatePasswordUseCase,
     private val repository: AuthRepository
 ) {
     operator suspend fun invoke(
@@ -13,8 +11,6 @@ class SignupUserUseCase @Inject constructor(
         email: String,
         password: String
     ): Boolean {
-        return validateEmail(email) &&
-                validatePassword(password) &&
-                repository.signupUser(name, email, password)
+        return repository.signupUser(name, email, password)
     }
 }

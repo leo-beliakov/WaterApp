@@ -28,6 +28,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 //TODO DONE:
 //1.1. Make beverages buttons work - DONE
 //2. Make progress change

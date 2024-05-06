@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
@@ -26,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.leoapps.waterapp.auth.signup.presentation.composables.PasswordStrengthItem
+import com.leoapps.waterapp.auth.signup.presentation.model.PasswordStrengthItemState
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiEffect
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiState
 import com.leoapps.waterapp.auth.signup.presentation.navigation.SignupNavigator
@@ -116,26 +120,14 @@ private fun SignupScreen(
                 .fillMaxWidth()
                 .padding(top = 12.dp)
         )
-        OutlinedTextField(
-            value = state.password,
-            onValueChange = onPasswordUpdated,
-            label = { Text(text = "Password") },
-            maxLines = 1,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                autoCorrect = false,
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                    onDoneActionClicked()
-                }
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp)
+        PasswordInputField(
+            password = state.password,
+            passwordStrengthItems = state.passwordStrengths,
+            onPasswordUpdated = onPasswordUpdated,
+            onDoneActionClicked = {
+                focusManager.clearFocus()
+                onDoneActionClicked()
+            }
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -166,5 +158,44 @@ private fun SignupScreen(
             onClick = onCreateClicked,
             modifier = Modifier.fillMaxWidth()
         )
+    }
+}
+
+@Composable
+private fun PasswordInputField(
+    password: String,
+    passwordStrengthItems: List<PasswordStrengthItemState>,
+    onPasswordUpdated: (String) -> Unit,
+    onDoneActionClicked: () -> Unit,
+) {
+    LazyColumn {
+        item {
+            OutlinedTextField(
+                value = password,
+                onValueChange = onPasswordUpdated,
+                label = { Text(text = "Password") },
+                maxLines = 1,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    autoCorrect = false,
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { onDoneActionClicked() }
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+            )
+        }
+        items(
+            items = passwordStrengthItems,
+            key = { it.textResId }
+        ) { strengthState ->
+            PasswordStrengthItem(
+                state = strengthState
+            )
+        }
     }
 }

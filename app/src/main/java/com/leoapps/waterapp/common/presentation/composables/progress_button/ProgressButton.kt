@@ -37,7 +37,7 @@ fun ProgressButton(
     }
 }
 
-class ButtonStateProvider : PreviewParameterProvider<ProgressButtonState> {
+private class ButtonStateProvider : PreviewParameterProvider<ProgressButtonState> {
     override val values = listOf(
         ProgressButtonState(
             isEnabled = true,
