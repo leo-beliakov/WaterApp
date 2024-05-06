@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -30,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiEffect
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiState
 import com.leoapps.waterapp.auth.signup.presentation.navigation.SignupNavigator
+import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButton
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.common.utils.clickableWithoutRipple
 
@@ -161,11 +161,10 @@ private fun SignupScreen(
                 modifier = Modifier.clickableWithoutRipple(onClick = onTermsClicked)
             )
         }
-        Button(
+        ProgressButton(
+            state = state.buttonState,
             onClick = onCreateClicked,
             modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = "Create Account")
-        }
+        )
     }
 }

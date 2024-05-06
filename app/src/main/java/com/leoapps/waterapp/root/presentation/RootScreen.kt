@@ -25,7 +25,7 @@ fun RootScreen(
 
     NavHost(
         navController = navController,
-        startDestination = "login",
+        startDestination = "signup",
     ) {
         composable("splash") {
             SplashScreen()

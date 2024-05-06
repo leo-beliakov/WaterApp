@@ -1,7 +1,7 @@
 package com.leoapps.waterapp.home.root.model
 
 import com.leoapps.waterapp.R
-import com.leoapps.waterapp.common.composables.tab_bar.TabBarTab
+import com.leoapps.waterapp.common.presentation.composables.tab_bar.TabBarTab
 
 sealed class HomeTab(
     override val route: String,

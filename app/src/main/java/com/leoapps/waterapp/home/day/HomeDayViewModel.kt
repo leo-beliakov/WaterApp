@@ -3,11 +3,11 @@ package com.leoapps.waterapp.home.day
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leoapps.waterapp.common.vibrator.domain.WaterAppVibrator
-import com.leoapps.waterapp.common.waterbalance.domain.WaterBalanceRepository
 import com.leoapps.waterapp.home.day.model.BeverageItem
 import com.leoapps.waterapp.home.day.model.DayProgressState
 import com.leoapps.waterapp.home.day.model.DayUiState
 import com.leoapps.waterapp.home.day.model.HomeDayUiEffect
+import com.leoapps.waterapp.water.domain.WaterBalanceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

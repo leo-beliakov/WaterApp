@@ -1,4 +1,4 @@
-package com.leoapps.waterapp.common.composables.tab_bar
+package com.leoapps.waterapp.common.presentation.composables.tab_bar
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp

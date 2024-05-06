@@ -6,6 +6,7 @@ import com.leoapps.waterapp.auth.signup.domain.SignupUserUseCase
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiEffect
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -38,14 +39,74 @@ class SignupViewModel @Inject constructor(
     }
 
     fun onTermsChecked(checked: Boolean) {
-        _state.update { it.copy(termsAccepted = checked) }
+        //todo validation should include all fields!
+        _state.update {
+            it.copy(
+                termsAccepted = checked,
+                buttonState = it.buttonState.copy(
+                    isEnabled = checked
+                )
+            )
+        }
     }
 
     fun onCreateClicked() {
+        //todo add validation
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    buttonState = it.buttonState.copy(
+                        isLoading = true
+                    )
+                )
+            }
 
+            delay(600)
+
+            signupUser(
+                _state.value.name,
+                _state.value.email,
+                _state.value.password,
+            )
+
+            _state.update {
+                it.copy(
+                    buttonState = it.buttonState.copy(
+                        isLoading = false
+                    )
+                )
+            }
+        }
     }
 
     fun onDoneActionClicked() {
+        //todo add validation
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    buttonState = it.buttonState.copy(
+                        isLoading = true
+                    )
+                )
+            }
+
+            delay(600)
+
+            signupUser(
+                _state.value.name,
+                _state.value.email,
+                _state.value.password,
+            )
+
+            _state.update {
+                it.copy(
+                    buttonState = it.buttonState.copy(
+                        isLoading = false
+                    )
+                )
+            }
+        }
+
 
     }
 

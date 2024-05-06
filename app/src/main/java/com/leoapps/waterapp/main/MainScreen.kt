@@ -16,9 +16,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.leoapps.waterapp.common.composables.tab_bar.TabBar
-import com.leoapps.waterapp.common.composables.tab_bar.TabBarColorScheme
-import com.leoapps.waterapp.common.composables.tab_bar.TabBarSize
+import com.leoapps.waterapp.common.presentation.composables.tab_bar.TabBar
+import com.leoapps.waterapp.common.presentation.composables.tab_bar.TabBarColorScheme
+import com.leoapps.waterapp.common.presentation.composables.tab_bar.TabBarSize
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.common.utils.openTab
 import com.leoapps.waterapp.home.root.HomeScreen

@@ -87,8 +87,6 @@ private fun OnboardingCard(
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(32.dp)
-
-
     ) {
         Text(
             text = stringResource(id = R.string.onboarding_title),
