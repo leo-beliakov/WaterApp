@@ -2,6 +2,7 @@ package com.leoapps.waterapp.profile.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.leoapps.waterapp.auth.common.domain.DeleteUserUseCase
 import com.leoapps.waterapp.auth.common.domain.GetCurrentUserAsFlowUseCase
 import com.leoapps.waterapp.auth.common.domain.LogoutUserUseCase
 import com.leoapps.waterapp.profile.presentation.model.ProfileUiEffect
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getCurrentUserAsFlow: GetCurrentUserAsFlowUseCase,
-    private val logOutUser: LogoutUserUseCase
+    private val logOutUser: LogoutUserUseCase,
+    private val deleteUser: DeleteUserUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileUiState())
@@ -52,6 +54,12 @@ class ProfileViewModel @Inject constructor(
     fun onLogOutClicked() {
         viewModelScope.launch {
             logOutUser()
+        }
+    }
+
+    fun onDeleteAccountClicked() {
+        viewModelScope.launch {
+            deleteUser()
         }
     }
 }

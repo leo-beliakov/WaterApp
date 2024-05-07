@@ -12,7 +12,6 @@ import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiEffect
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiState
 import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButtonState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -79,7 +78,9 @@ class SignupViewModel @Inject constructor(
     }
 
     fun onTermsClicked() {
-
+        viewModelScope.launch {
+            _sideEffects.emit(SignupUiEffect.OpenUrl(TERMS_AND_CONDITIONS_URL))
+        }
     }
 
     private fun createAccount() {
@@ -93,10 +94,7 @@ class SignupViewModel @Inject constructor(
                 )
             }
 
-            //todo remove
-            delay(600)
-
-            signupUser(
+            val isSignupSuccessful = signupUser(
                 _state.value.name,
                 _state.value.email,
                 _state.value.password,
@@ -110,8 +108,9 @@ class SignupViewModel @Inject constructor(
                 )
             }
 
-            //todo check if the signup was successfull
-            _sideEffects.emit(SignupUiEffect.CloseAuth)
+            if (isSignupSuccessful) {
+                _sideEffects.emit(SignupUiEffect.CloseAuth)
+            }
         }
     }
 
@@ -168,5 +167,9 @@ class SignupViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    companion object {
+        private const val TERMS_AND_CONDITIONS_URL = "https://www.google.com"
     }
 }

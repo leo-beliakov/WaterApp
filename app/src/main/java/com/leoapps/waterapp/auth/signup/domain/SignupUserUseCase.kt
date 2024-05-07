@@ -1,6 +1,7 @@
 package com.leoapps.waterapp.auth.signup.domain
 
 import com.leoapps.waterapp.auth.common.domain.AuthRepository
+import com.leoapps.waterapp.common.domain.task_result.TaskResult
 import javax.inject.Inject
 
 class SignupUserUseCase @Inject constructor(
@@ -10,7 +11,7 @@ class SignupUserUseCase @Inject constructor(
         name: String,
         email: String,
         password: String
-    ): Boolean {
+    ): TaskResult<Unit> {
         return repository.signupUser(name, email, password)
     }
 }

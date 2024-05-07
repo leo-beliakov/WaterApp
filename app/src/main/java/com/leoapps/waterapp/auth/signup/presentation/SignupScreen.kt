@@ -64,6 +64,7 @@ fun SignupScreen(
         when (effect) {
             SignupUiEffect.GoBack -> navigator.goBack()
             SignupUiEffect.CloseAuth -> navigator.closeAuth()
+            is SignupUiEffect.OpenUrl -> navigator.openUri(effect.url)
         }
     }
 }

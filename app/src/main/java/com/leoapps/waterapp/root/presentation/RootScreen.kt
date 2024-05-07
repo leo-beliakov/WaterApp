@@ -2,6 +2,7 @@ package com.leoapps.waterapp.root.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -49,7 +50,10 @@ fun RootScreen(
         }
         composable("signup") {
             SignupScreen(
-                navigator = SignupNavigator(navController)
+                navigator = SignupNavigator(
+                    navController = navController,
+                    uriHandler = LocalUriHandler.current
+                )
             )
         }
         composable("profile") {

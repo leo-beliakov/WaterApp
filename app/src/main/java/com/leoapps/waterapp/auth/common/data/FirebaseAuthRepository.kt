@@ -1,16 +1,18 @@
 package com.leoapps.waterapp.auth.common.data
 
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
 import com.leoapps.waterapp.auth.common.domain.AuthRepository
 import com.leoapps.waterapp.auth.common.domain.model.User
+import com.leoapps.waterapp.common.domain.task_result.TaskResult
+import com.leoapps.waterapp.common.domain.task_result.isFailure
+import com.leoapps.waterapp.common.domain.task_result.mapToUnit
+import com.leoapps.waterapp.common.utils.asSuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -38,6 +40,15 @@ class FirebaseAuthRepository @Inject constructor() : AuthRepository {
         return auth.currentUser != null
     }
 
+    override suspend fun deleteUser(): TaskResult<Unit> = withContext(Dispatchers.IO) {
+        val deleteUserResult = auth.currentUser
+            ?.delete()
+            ?.asSuspend()
+
+        return@withContext deleteUserResult?.mapToUnit()
+            ?: TaskResult.Failure(IllegalStateException("User is not logged in"))
+    }
+
     override suspend fun logoutUser() = withContext(Dispatchers.IO) {
         auth.signOut()
     }
@@ -48,24 +59,19 @@ class FirebaseAuthRepository @Inject constructor() : AuthRepository {
         name: String,
         email: String,
         password: String
-    ) = withContext(Dispatchers.IO) {
-        //todo track Result of the operation
-        val signupResult = auth.createUserWithEmailAndPassword(email, password).asSuspend()
-        val profileUpdates = userProfileChangeRequest {
-            displayName = name
-        }
-        signupResult.user?.updateProfile(profileUpdates)?.asSuspend()
-        return@withContext true
-    }
+    ): TaskResult<Unit> = withContext(Dispatchers.IO) {
+        val signupResult = auth
+            .createUserWithEmailAndPassword(email, password)
+            .asSuspend()
 
-    suspend fun <T> Task<T>.asSuspend() = suspendCancellableCoroutine<T> { continuation ->
-        this.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                continuation.resumeWith(Result.success(task.result))
-            } else {
-                val exception = task.exception ?: UnknownError("Task failed")
-                continuation.resumeWith(Result.failure(exception))
-            }
-        }
+        if (signupResult.isFailure()) return@withContext signupResult
+
+        val profileUpdates = userProfileChangeRequest { displayName = name }
+        val updateResult = auth.currentUser
+            ?.updateProfile(profileUpdates)
+            ?.asSuspend()
+
+        return@withContext updateResult?.mapToUnit()
+            ?: TaskResult.Failure(IllegalStateException("Name not updated"))
     }
 }

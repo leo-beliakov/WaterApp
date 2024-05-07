@@ -37,6 +37,7 @@ fun ProfileScreen(
         state = state,
         onLoginClicked = viewModel::onLoginClicked,
         onLogOutClicked = viewModel::onLogOutClicked,
+        onDeleteAccountClicked = viewModel::onDeleteAccountClicked,
     )
 
     CollectEventsWithLifecycle(viewModel.sideEffects) { effect ->
@@ -51,6 +52,7 @@ private fun ProfileScreen(
     state: ProfileUiState,
     onLoginClicked: () -> Unit,
     onLogOutClicked: () -> Unit,
+    onDeleteAccountClicked: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -82,12 +84,23 @@ private fun ProfileScreen(
             Button(
                 onClick = onLogOutClicked,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red
+                    containerColor = Color.Yellow
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = stringResource(R.string.common_logout)
+                )
+            }
+            Button(
+                onClick = onDeleteAccountClicked,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(R.string.profile_delete_account)
                 )
             }
         }
@@ -105,7 +118,8 @@ private fun ProfileScreenPreview() {
                 loginButtonVisible = false,
             ),
             onLoginClicked = { },
-            onLogOutClicked = { }
+            onLogOutClicked = { },
+            onDeleteAccountClicked = { }
         )
     }
 }
