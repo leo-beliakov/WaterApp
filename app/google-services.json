@@ -12,7 +12,20 @@
           "package_name": "com.leoapps.waterapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1006655469675-4sgcm8qcs6ncrqu25vi331skf65dg6ar.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.leoapps.waterapp",
+            "certificate_hash": "7b0ad16395cefe425fca432b0f5f6d8151a27a1b"
+          }
+        },
+        {
+          "client_id": "1006655469675-f3algbiterhbl5qk8a5ck8kirngo5ufu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC92Nu1OSpHKEuje72fs2bc_i0QaqwZeJE"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1006655469675-f3algbiterhbl5qk8a5ck8kirngo5ufu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

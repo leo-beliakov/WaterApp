@@ -11,7 +11,7 @@ class LoginNavigator(
         }
     }
 
-    fun goBack() {
-
+    fun closeAuth() {
+        navController.popBackStack("login", true)
     }
 }

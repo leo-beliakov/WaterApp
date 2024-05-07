@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -37,6 +36,7 @@ import com.leoapps.waterapp.R
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiEffect
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiState
 import com.leoapps.waterapp.auth.login.presentation.navigation.LoginNavigator
+import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButton
 import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.common.utils.clickableWithoutRipple
@@ -61,7 +61,7 @@ fun LoginScreen(
 
     CollectEventsWithLifecycle(viewModel.sideEffects) { effect ->
         when (effect) {
-            LoginUiEffect.GoBack -> navigator.goBack()
+            LoginUiEffect.CloseAuth -> navigator.closeAuth()
             LoginUiEffect.OpenSignUp -> navigator.openSignup()
         }
     }
@@ -90,8 +90,7 @@ private fun LoginScreen(
             )
     ) {
         EmailLoginForm(
-            email = state.email,
-            password = state.password,
+            state = state,
             onEmailUpdated = onEmailUpdated,
             onPasswordUpdated = onPasswordUpdated,
             onDoneActionClicked = onDoneActionClicked,
@@ -147,8 +146,7 @@ private fun FederatedIdentityButtons(
 
 @Composable
 fun EmailLoginForm(
-    email: String,
-    password: String,
+    state: LoginUiState,
     onEmailUpdated: (String) -> Unit,
     onPasswordUpdated: (String) -> Unit,
     onDoneActionClicked: () -> Unit,
@@ -157,7 +155,7 @@ fun EmailLoginForm(
     val focusManager = LocalFocusManager.current
 
     OutlinedTextField(
-        value = email,
+        value = state.email,
         onValueChange = onEmailUpdated,
         label = { Text(text = "Email") },
         maxLines = 1,
@@ -169,7 +167,7 @@ fun EmailLoginForm(
         modifier = Modifier.fillMaxWidth()
     )
     OutlinedTextField(
-        value = password,
+        value = state.password,
         onValueChange = onPasswordUpdated,
         label = { Text(text = "Password") },
         maxLines = 1,
@@ -189,14 +187,13 @@ fun EmailLoginForm(
             .fillMaxWidth()
             .padding(top = 12.dp)
     )
-    Button(
+    ProgressButton(
+        state = state.buttonState,
         onClick = onLoginClicked,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 12.dp)
-    ) {
-        Text(text = "Login")
-    }
+    )
 }
 
 @Composable

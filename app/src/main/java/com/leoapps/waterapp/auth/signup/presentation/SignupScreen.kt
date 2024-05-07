@@ -32,7 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leoapps.waterapp.R
 import com.leoapps.waterapp.auth.signup.presentation.composables.PasswordStrengthItem
 import com.leoapps.waterapp.auth.signup.presentation.model.PasswordStrengthItemState
-import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiEffect
+import com.leoapps.waterapp.auth.signup.presentation.model.SignUpUiEffect
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiState
 import com.leoapps.waterapp.auth.signup.presentation.navigation.SignupNavigator
 import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButton
@@ -43,7 +43,7 @@ import com.leoapps.waterapp.common.utils.clickableWithoutRipple
 
 @Composable
 fun SignupScreen(
-    viewModel: SignupViewModel = hiltViewModel(),
+    viewModel: SignUpViewModel = hiltViewModel(),
     navigator: SignupNavigator
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -62,9 +62,9 @@ fun SignupScreen(
 
     CollectEventsWithLifecycle(viewModel.sideEffects) { effect ->
         when (effect) {
-            SignupUiEffect.GoBack -> navigator.goBack()
-            SignupUiEffect.CloseAuth -> navigator.closeAuth()
-            is SignupUiEffect.OpenUrl -> navigator.openUri(effect.url)
+            SignUpUiEffect.GoBack -> navigator.goBack()
+            SignUpUiEffect.CloseAuth -> navigator.closeAuth()
+            is SignUpUiEffect.OpenUrl -> navigator.openUri(effect.url)
         }
     }
 }

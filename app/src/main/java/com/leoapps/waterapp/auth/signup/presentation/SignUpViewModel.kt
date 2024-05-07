@@ -3,13 +3,14 @@ package com.leoapps.waterapp.auth.signup.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leoapps.waterapp.R
-import com.leoapps.waterapp.auth.signup.domain.SignupUserUseCase
+import com.leoapps.waterapp.auth.signup.domain.SignUpUserUseCase
 import com.leoapps.waterapp.auth.signup.domain.ValidateEmailUseCase
 import com.leoapps.waterapp.auth.signup.domain.ValidatePasswordUseCase
 import com.leoapps.waterapp.auth.signup.presentation.mapper.SignupMapper
 import com.leoapps.waterapp.auth.signup.presentation.model.PasswordStrengthItemState
-import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiEffect
+import com.leoapps.waterapp.auth.signup.presentation.model.SignUpUiEffect
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiState
+import com.leoapps.waterapp.common.domain.task_result.isSuccess
 import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButtonState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,8 +22,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SignupViewModel @Inject constructor(
-    private val signupUser: SignupUserUseCase,
+class SignUpViewModel @Inject constructor(
+    private val signUpUser: SignUpUserUseCase,
     private val validatePassword: ValidatePasswordUseCase,
     private val isEmailValid: ValidateEmailUseCase,
     private val mapper: SignupMapper
@@ -31,8 +32,8 @@ class SignupViewModel @Inject constructor(
     private val _state = MutableStateFlow(getInitialState())
     val state = _state.asStateFlow()
 
-    private val _sideEffects = MutableSharedFlow<SignupUiEffect>()
-    val sideEffects: SharedFlow<SignupUiEffect> = _sideEffects
+    private val _sideEffects = MutableSharedFlow<SignUpUiEffect>()
+    val sideEffects: SharedFlow<SignUpUiEffect> = _sideEffects
 
     fun onNameUpdated(value: String) {
         _state.update { it.copy(name = value) }
@@ -73,13 +74,13 @@ class SignupViewModel @Inject constructor(
 
     fun onBackClicked() {
         viewModelScope.launch {
-            _sideEffects.emit(SignupUiEffect.GoBack)
+            _sideEffects.emit(SignUpUiEffect.GoBack)
         }
     }
 
     fun onTermsClicked() {
         viewModelScope.launch {
-            _sideEffects.emit(SignupUiEffect.OpenUrl(TERMS_AND_CONDITIONS_URL))
+            _sideEffects.emit(SignUpUiEffect.OpenUrl(TERMS_AND_CONDITIONS_URL))
         }
     }
 
@@ -94,7 +95,7 @@ class SignupViewModel @Inject constructor(
                 )
             }
 
-            val isSignupSuccessful = signupUser(
+            val signUpResult = signUpUser(
                 _state.value.name,
                 _state.value.email,
                 _state.value.password,
@@ -108,8 +109,8 @@ class SignupViewModel @Inject constructor(
                 )
             }
 
-            if (isSignupSuccessful) {
-                _sideEffects.emit(SignupUiEffect.CloseAuth)
+            if (signUpResult.isSuccess()) {
+                _sideEffects.emit(SignUpUiEffect.CloseAuth)
             }
         }
     }

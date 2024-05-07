@@ -36,10 +36,6 @@ class FirebaseAuthRepository @Inject constructor() : AuthRepository {
         return currentUser.asStateFlow()
     }
 
-    override fun isAuthenticated(): Boolean {
-        return auth.currentUser != null
-    }
-
     override suspend fun deleteUser(): TaskResult<Unit> = withContext(Dispatchers.IO) {
         val deleteUserResult = auth.currentUser
             ?.delete()
@@ -51,6 +47,18 @@ class FirebaseAuthRepository @Inject constructor() : AuthRepository {
 
     override suspend fun logoutUser() = withContext(Dispatchers.IO) {
         auth.signOut()
+    }
+
+    //FirebaseAuthInvalidCredentialsException
+    override suspend fun signinUser(
+        email: String,
+        password: String
+    ): TaskResult<Unit> = withContext(Dispatchers.IO) {
+        val signinResult = auth
+            .signInWithEmailAndPassword(email, password)
+            .asSuspend()
+
+        return@withContext signinResult.mapToUnit()
     }
 
     //FirebaseAuthUserCollisionException - The email address is already in use by another account.

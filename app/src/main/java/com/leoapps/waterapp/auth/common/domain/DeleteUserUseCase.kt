@@ -1,6 +1,6 @@
 package com.leoapps.waterapp.auth.common.domain
 
-import com.leoapps.waterapp.auth.common.data.TaskResult
+import com.leoapps.waterapp.common.domain.task_result.TaskResult
 import javax.inject.Inject
 
 class DeleteUserUseCase @Inject constructor(
