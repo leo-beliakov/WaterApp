@@ -7,33 +7,7 @@ data class SignupUiState(
     val name: String = "",
     val email: String = "",
     val password: String = "",
-    val passwordStrengths: List<PasswordStrengthItemState> = listOf(
-        //todo probably shouldn't be here
-        PasswordStrengthItemState(
-            textResId = R.string.password_validation_digits,
-            checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
-        ),
-        PasswordStrengthItemState(
-            textResId = R.string.password_validation_lowercase,
-            checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
-        ),
-        PasswordStrengthItemState(
-            textResId = R.string.password_validation_uppercase,
-            checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
-        ),
-        PasswordStrengthItemState(
-            textResId = R.string.password_validation_special_caracter,
-            checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
-        ),
-        PasswordStrengthItemState(
-            textResId = R.string.password_validation_white_spaces,
-            checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
-        ),
-        PasswordStrengthItemState(
-            textResId = R.string.password_validation_length,
-            checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
-        ),
-    ),
+    val passwordStrengths: List<PasswordStrengthItemState> = listOf(),
     val termsAccepted: Boolean = false,
     val buttonState: ProgressButtonState = ProgressButtonState(
         isEnabled = false,

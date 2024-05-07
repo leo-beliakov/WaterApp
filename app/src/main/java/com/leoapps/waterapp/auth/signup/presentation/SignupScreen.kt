@@ -24,16 +24,20 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.leoapps.waterapp.R
 import com.leoapps.waterapp.auth.signup.presentation.composables.PasswordStrengthItem
 import com.leoapps.waterapp.auth.signup.presentation.model.PasswordStrengthItemState
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiEffect
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiState
 import com.leoapps.waterapp.auth.signup.presentation.navigation.SignupNavigator
 import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButton
+import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButtonState
+import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.common.utils.clickableWithoutRipple
 
@@ -187,7 +191,7 @@ private fun PasswordInputField(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp)
+                    .padding(vertical = 12.dp)
             )
         }
         items(
@@ -198,5 +202,59 @@ private fun PasswordInputField(
                 state = strengthState
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun SignupScreenPreview() {
+    WaterAppTheme {
+        SignupScreen(
+            state = SignupUiState(
+                name = "",
+                email = "",
+                password = "",
+                passwordStrengths = listOf(
+                    PasswordStrengthItemState(
+                        textResId = R.string.password_validation_digits,
+                        checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
+                    ),
+                    PasswordStrengthItemState(
+                        textResId = R.string.password_validation_lowercase,
+                        checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
+                    ),
+                    PasswordStrengthItemState(
+                        textResId = R.string.password_validation_uppercase,
+                        checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
+                    ),
+                    PasswordStrengthItemState(
+                        textResId = R.string.password_validation_special_caracter,
+                        checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
+                    ),
+                    PasswordStrengthItemState(
+                        textResId = R.string.password_validation_white_spaces,
+                        checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
+                    ),
+                    PasswordStrengthItemState(
+                        textResId = R.string.password_validation_length,
+                        checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
+                    ),
+                ),
+                termsAccepted = false,
+                buttonState = ProgressButtonState(
+                    isEnabled = false,
+                    isLoading = false,
+                    textResId = R.string.sugnup_button_create,
+                )
+            ),
+            onNameUpdated = {},
+            onEmailUpdated = {},
+            onPasswordUpdated = {},
+            onTermsChecked = {},
+            onTermsClicked = {},
+            onBackClicked = {},
+            onCreateClicked = {},
+            onDoneActionClicked = {},
+        )
     }
 }
