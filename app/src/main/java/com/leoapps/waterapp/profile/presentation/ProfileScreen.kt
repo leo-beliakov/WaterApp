@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leoapps.waterapp.R
+import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButton
 import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.profile.presentation.ProfileViewModel
@@ -92,17 +93,14 @@ private fun ProfileScreen(
                     text = stringResource(R.string.common_logout)
                 )
             }
-            Button(
+            ProgressButton(
+                state = state.deleteButtonState,
                 onClick = onDeleteAccountClicked,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Red
                 ),
                 modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(R.string.profile_delete_account)
-                )
-            }
+            )
         }
     }
 }

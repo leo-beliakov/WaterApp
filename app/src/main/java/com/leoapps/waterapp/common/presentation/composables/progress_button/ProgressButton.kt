@@ -2,6 +2,8 @@ package com.leoapps.waterapp.common.presentation.composables.progress_button
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,11 +21,13 @@ import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
 fun ProgressButton(
     state: ProgressButtonState,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    modifier: Modifier = Modifier,
 ) {
     Button(
         enabled = state.isEnabled,
         onClick = { if (!state.isLoading) onClick() },
+        colors = colors,
         modifier = modifier
     ) {
         if (state.isLoading) {
@@ -65,7 +69,10 @@ private fun ProgressButtonPreview(
     WaterAppTheme {
         ProgressButton(
             state = state,
-            onClick = {}
+            onClick = {},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Red
+            )
         )
     }
 }

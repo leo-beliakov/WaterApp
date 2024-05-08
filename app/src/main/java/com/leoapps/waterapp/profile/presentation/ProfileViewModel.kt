@@ -63,17 +63,27 @@ class ProfileViewModel @Inject constructor(
         deleteUser().collectLatest { deleteResult ->
             when (deleteResult) {
                 TaskResult.Loading -> {
-                    //todo
+                    setDeleteButtonLoading(true)
                 }
 
                 is TaskResult.Failure -> {
-                    //todo
+                    setDeleteButtonLoading(false)
                 }
 
                 is TaskResult.Success -> {
-                    //todo
+                    setDeleteButtonLoading(false)
                 }
             }
+        }
+    }
+
+    private fun setDeleteButtonLoading(isLoading: Boolean) {
+        _state.update {
+            it.copy(
+                deleteButtonState = it.deleteButtonState.copy(
+                    isLoading = isLoading
+                )
+            )
         }
     }
 }
