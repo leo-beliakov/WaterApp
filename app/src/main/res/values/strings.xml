@@ -14,6 +14,7 @@
 
     <string name="common_login">Log In</string>
     <string name="common_logout">Log Out</string>
+    <string name="common_invalid_email">Invalid email format</string>
 
     <string name="profile_delete_account">Delete account</string>
 

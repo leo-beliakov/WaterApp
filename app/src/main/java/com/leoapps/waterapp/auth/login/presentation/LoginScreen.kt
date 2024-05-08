@@ -22,9 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -52,6 +55,7 @@ fun LoginScreen(
     LoginScreen(
         state = state,
         onEmailUpdated = viewModel::onEmailUpdated,
+        onEmailFocusChanged = viewModel::onEmailFocusChanged,
         onPasswordUpdated = viewModel::onPasswordUpdated,
         onDoneActionClicked = viewModel::onDoneActionClicked,
         onLoginClicked = viewModel::onLoginButtonClicked,
@@ -72,6 +76,7 @@ fun LoginScreen(
 private fun LoginScreen(
     state: LoginUiState,
     onEmailUpdated: (String) -> Unit,
+    onEmailFocusChanged: (FocusState) -> Unit,
     onPasswordUpdated: (String) -> Unit,
     onDoneActionClicked: () -> Unit,
     onLoginClicked: () -> Unit,
@@ -93,6 +98,7 @@ private fun LoginScreen(
         EmailLoginForm(
             state = state,
             onEmailUpdated = onEmailUpdated,
+            onEmailFocusChanged = onEmailFocusChanged,
             onPasswordUpdated = onPasswordUpdated,
             onDoneActionClicked = onDoneActionClicked,
             onLoginClicked = onLoginClicked,
@@ -149,6 +155,7 @@ private fun FederatedIdentityButtons(
 fun EmailLoginForm(
     state: LoginUiState,
     onEmailUpdated: (String) -> Unit,
+    onEmailFocusChanged: (FocusState) -> Unit,
     onPasswordUpdated: (String) -> Unit,
     onDoneActionClicked: () -> Unit,
     onLoginClicked: () -> Unit,
@@ -165,7 +172,15 @@ fun EmailLoginForm(
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next
         ),
-        modifier = Modifier.fillMaxWidth()
+        isError = state.showEmailInvalidError,
+        supportingText = if (state.showEmailInvalidError) {
+            { Text(text = stringResource(id = R.string.common_invalid_email)) }
+        } else {
+            null
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .onFocusChanged(onEmailFocusChanged)
     )
     OutlinedTextField(
         value = state.password,
@@ -255,6 +270,7 @@ private fun LoginScreenPreview() {
                 password = ""
             ),
             onEmailUpdated = {},
+            onEmailFocusChanged = {},
             onPasswordUpdated = {},
             onDoneActionClicked = {},
             onLoginClicked = {},

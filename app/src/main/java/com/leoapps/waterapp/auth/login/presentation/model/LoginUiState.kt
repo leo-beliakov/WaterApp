@@ -5,6 +5,7 @@ import com.leoapps.waterapp.common.presentation.composables.progress_button.Prog
 
 data class LoginUiState(
     val email: String = "",
+    val showEmailInvalidError: Boolean = false,
     val password: String = "",
     val buttonState: ProgressButtonState = ProgressButtonState(
         isEnabled = false,

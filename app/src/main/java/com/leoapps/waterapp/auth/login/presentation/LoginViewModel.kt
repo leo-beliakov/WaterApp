@@ -1,5 +1,6 @@
 package com.leoapps.waterapp.auth.login.presentation
 
+import androidx.compose.ui.focus.FocusState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiEffect
@@ -35,8 +36,31 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onEmailUpdated(value: String) {
-        _state.update { it.copy(email = value) }
+        _state.update {
+            //We want to dismiss the error when the user has corrected the email,
+            //but we don't want to raise the error while the user is typing
+            val updatedErrorState = if (isEmailValid(value)) {
+                false
+            } else {
+                it.showEmailInvalidError
+            }
+
+            it.copy(
+                email = value,
+                showEmailInvalidError = updatedErrorState
+            )
+        }
         updateLoginButtonState()
+    }
+
+    fun onEmailFocusChanged(focusState: FocusState) {
+        if (!focusState.isFocused && state.value.email.isNotEmpty()) {
+            _state.update {
+                it.copy(
+                    showEmailInvalidError = !isEmailValid(it.email)
+                )
+            }
+        }
     }
 
     fun onDoneActionClicked() {
