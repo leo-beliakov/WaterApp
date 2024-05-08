@@ -4,6 +4,8 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 sealed class TaskResult<out T> {
+    object Loading : TaskResult<Nothing>()
+
     data class Success<T>(
         val value: T
     ) : TaskResult<T>()

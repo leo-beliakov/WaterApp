@@ -10,13 +10,14 @@ import com.leoapps.waterapp.auth.signup.presentation.mapper.SignupMapper
 import com.leoapps.waterapp.auth.signup.presentation.model.PasswordStrengthItemState
 import com.leoapps.waterapp.auth.signup.presentation.model.SignUpUiEffect
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiState
-import com.leoapps.waterapp.common.domain.task_result.isSuccess
+import com.leoapps.waterapp.common.domain.task_result.TaskResult
 import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButtonState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -84,33 +85,25 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun createAccount() {
-        //todo add validation
-        viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    buttonState = it.buttonState.copy(
-                        isLoading = true
-                    )
-                )
-            }
+    private fun createAccount() = viewModelScope.launch {
+        signUpUser(
+            _state.value.name,
+            _state.value.email,
+            _state.value.password,
+        ).collectLatest { signupResult ->
+            when (signupResult) {
+                TaskResult.Loading -> {
+                    setButtonLoading(true)
+                }
 
-            val signUpResult = signUpUser(
-                _state.value.name,
-                _state.value.email,
-                _state.value.password,
-            )
+                is TaskResult.Failure -> {
+                    setButtonLoading(false)
+                }
 
-            _state.update {
-                it.copy(
-                    buttonState = it.buttonState.copy(
-                        isLoading = false
-                    )
-                )
-            }
-
-            if (signUpResult.isSuccess()) {
-                _sideEffects.emit(SignUpUiEffect.CloseAuth)
+                is TaskResult.Success -> {
+                    setButtonLoading(false)
+                    _sideEffects.emit(SignUpUiEffect.CloseAuth)
+                }
             }
         }
     }
@@ -165,6 +158,16 @@ class SignUpViewModel @Inject constructor(
                             it.passwordStrengths.all {
                                 it.checkResult == PasswordStrengthItemState.CheckResult.CHECK_SUCCED
                             }
+                )
+            )
+        }
+    }
+
+    private fun setButtonLoading(isLoading: Boolean) {
+        _state.update {
+            it.copy(
+                buttonState = it.buttonState.copy(
+                    isLoading = isLoading
                 )
             )
         }

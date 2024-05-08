@@ -6,12 +6,13 @@ import com.leoapps.waterapp.auth.login.presentation.model.LoginUiEffect
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiState
 import com.leoapps.waterapp.auth.signup.domain.SignInUserUseCase
 import com.leoapps.waterapp.auth.signup.domain.ValidateEmailUseCase
-import com.leoapps.waterapp.common.domain.task_result.isSuccess
+import com.leoapps.waterapp.common.domain.task_result.TaskResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -64,32 +65,24 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    private fun loginUser() {
-        viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    buttonState = it.buttonState.copy(
-                        isLoading = true
-                    )
-                )
-            }
+    private fun loginUser() = viewModelScope.launch {
+        signinUser(
+            _state.value.email,
+            _state.value.password,
+        ).collectLatest { signinResult ->
+            when (signinResult) {
+                TaskResult.Loading -> {
+                    setButtonLoading(true)
+                }
 
-            val signInResult = signinUser(
-                _state.value.email,
-                _state.value.password,
-            )
+                is TaskResult.Failure -> {
+                    setButtonLoading(false)
+                }
 
-            _state.update {
-                it.copy(
-                    buttonState = it.buttonState.copy(
-                        isLoading = false
-                    )
-                )
-            }
-
-            //todo handle unsuccessfull cases
-            if (signInResult.isSuccess()) {
-                _sideEffects.emit(LoginUiEffect.CloseAuth)
+                is TaskResult.Success -> {
+                    setButtonLoading(false)
+                    _sideEffects.emit(LoginUiEffect.CloseAuth)
+                }
             }
         }
     }
@@ -101,6 +94,16 @@ class LoginViewModel @Inject constructor(
                     isEnabled = it.email.isNotEmpty() &&
                             isEmailValid(it.email) &&
                             it.password.isNotEmpty()
+                )
+            )
+        }
+    }
+
+    private fun setButtonLoading(isLoading: Boolean) {
+        _state.update {
+            it.copy(
+                buttonState = it.buttonState.copy(
+                    isLoading = isLoading
                 )
             )
         }
