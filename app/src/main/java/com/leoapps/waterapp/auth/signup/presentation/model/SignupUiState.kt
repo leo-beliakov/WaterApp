@@ -7,6 +7,8 @@ data class SignupUiState(
     val name: String = "",
     val email: String = "",
     val password: String = "",
+    val showNameInvalidError: Boolean = false,
+    val showEmailInvalidError: Boolean = false,
     val passwordStrengths: List<PasswordStrengthItemState> = listOf(),
     val termsAccepted: Boolean = false,
     val buttonState: ProgressButtonState = ProgressButtonState(

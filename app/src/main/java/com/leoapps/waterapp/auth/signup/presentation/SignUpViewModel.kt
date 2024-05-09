@@ -1,10 +1,12 @@
 package com.leoapps.waterapp.auth.signup.presentation
 
+import androidx.compose.ui.focus.FocusState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leoapps.waterapp.R
 import com.leoapps.waterapp.auth.signup.domain.SignUpUserUseCase
 import com.leoapps.waterapp.auth.signup.domain.ValidateEmailUseCase
+import com.leoapps.waterapp.auth.signup.domain.ValidateNameUseCase
 import com.leoapps.waterapp.auth.signup.domain.ValidatePasswordUseCase
 import com.leoapps.waterapp.auth.signup.presentation.mapper.SignupMapper
 import com.leoapps.waterapp.auth.signup.presentation.model.PasswordStrengthItemState
@@ -26,6 +28,7 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val signUpUser: SignUpUserUseCase,
     private val validatePassword: ValidatePasswordUseCase,
+    private val isNameValid: ValidateNameUseCase,
     private val isEmailValid: ValidateEmailUseCase,
     private val mapper: SignupMapper
 ) : ViewModel() {
@@ -37,12 +40,38 @@ class SignUpViewModel @Inject constructor(
     val sideEffects: SharedFlow<SignUpUiEffect> = _sideEffects
 
     fun onNameUpdated(value: String) {
-        _state.update { it.copy(name = value) }
+        _state.update {
+            //We want to dismiss the error when the user has corrected the name,
+            //but we don't want to raise the error while the user is typing
+            val updatedErrorState = if (isNameValid(value)) {
+                false
+            } else {
+                it.showNameInvalidError
+            }
+
+            it.copy(
+                name = value,
+                showNameInvalidError = updatedErrorState
+            )
+        }
         updateCreateButtonState()
     }
 
     fun onEmailUpdated(value: String) {
-        _state.update { it.copy(email = value) }
+        _state.update {
+            //We want to dismiss the error when the user has corrected the email,
+            //but we don't want to raise the error while the user is typing
+            val updatedErrorState = if (isEmailValid(value)) {
+                false
+            } else {
+                it.showEmailInvalidError
+            }
+
+            it.copy(
+                email = value,
+                showEmailInvalidError = updatedErrorState
+            )
+        }
         updateCreateButtonState()
     }
 
@@ -170,6 +199,26 @@ class SignUpViewModel @Inject constructor(
                     isLoading = isLoading
                 )
             )
+        }
+    }
+
+    fun onNameFocusChanged(focusState: FocusState) {
+        if (!focusState.isFocused && state.value.name.isNotEmpty()) {
+            _state.update {
+                it.copy(
+                    showNameInvalidError = isNameValid(it.name)
+                )
+            }
+        }
+    }
+
+    fun onEmailFocusChanged(focusState: FocusState) {
+        if (!focusState.isFocused && state.value.email.isNotEmpty()) {
+            _state.update {
+                it.copy(
+                    showNameInvalidError = isEmailValid(it.email)
+                )
+            }
         }
     }
 

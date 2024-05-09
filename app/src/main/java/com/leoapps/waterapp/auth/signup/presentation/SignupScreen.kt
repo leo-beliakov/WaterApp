@@ -19,8 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -55,6 +58,8 @@ fun SignupScreen(
         onNameUpdated = viewModel::onNameUpdated,
         onEmailUpdated = viewModel::onEmailUpdated,
         onPasswordUpdated = viewModel::onPasswordUpdated,
+        onNameFocusChanged = viewModel::onNameFocusChanged,
+        onEmailFocusChanged = viewModel::onEmailFocusChanged,
         onTermsChecked = viewModel::onTermsChecked,
         onTermsClicked = viewModel::onTermsClicked,
         onCreateClicked = viewModel::onCreateClicked,
@@ -78,6 +83,8 @@ private fun SignupScreen(
     onNameUpdated: (String) -> Unit,
     onEmailUpdated: (String) -> Unit,
     onPasswordUpdated: (String) -> Unit,
+    onNameFocusChanged: (FocusState) -> Unit,
+    onEmailFocusChanged: (FocusState) -> Unit,
     onTermsChecked: (Boolean) -> Unit,
     onTermsClicked: () -> Unit,
     onBackClicked: () -> Unit,
@@ -105,19 +112,21 @@ private fun SignupScreen(
         OutlinedTextField(
             value = state.name,
             onValueChange = onNameUpdated,
-            label = { Text(text = "Full Name") },
+            label = { Text(text = stringResource(R.string.common_name)) },
             maxLines = 1,
             keyboardOptions = KeyboardOptions(
                 autoCorrect = false,
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .onFocusChanged(onNameFocusChanged)
+                .fillMaxWidth()
         )
         OutlinedTextField(
             value = state.email,
             onValueChange = onEmailUpdated,
-            label = { Text(text = "Email") },
+            label = { Text(text = stringResource(R.string.common_email)) },
             maxLines = 1,
             keyboardOptions = KeyboardOptions(
                 autoCorrect = false,
@@ -125,6 +134,7 @@ private fun SignupScreen(
                 imeAction = ImeAction.Next
             ),
             modifier = Modifier
+                .onFocusChanged(onEmailFocusChanged)
                 .fillMaxWidth()
                 .padding(top = 12.dp)
         )
@@ -184,7 +194,7 @@ private fun PasswordInputField(
             OutlinedTextField(
                 value = password,
                 onValueChange = onPasswordUpdated,
-                label = { Text(text = "Password") },
+                label = { Text(text = stringResource(R.string.common_password)) },
                 maxLines = 1,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
@@ -256,6 +266,8 @@ private fun SignupScreenPreview() {
             onNameUpdated = {},
             onEmailUpdated = {},
             onPasswordUpdated = {},
+            onNameFocusChanged = {},
+            onEmailFocusChanged = {},
             onTermsChecked = {},
             onTermsClicked = {},
             onBackClicked = {},
