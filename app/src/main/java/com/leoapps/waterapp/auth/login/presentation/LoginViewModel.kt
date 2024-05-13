@@ -1,8 +1,12 @@
 package com.leoapps.waterapp.auth.login.presentation
 
 import androidx.compose.ui.focus.FocusState
+import androidx.credentials.GetCredentialResponse
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.leoapps.waterapp.auth.common.data.GoogleAuthHelper
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiEffect
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiState
 import com.leoapps.waterapp.auth.signup.domain.SignInUserUseCase
@@ -22,6 +26,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val signinUser: SignInUserUseCase,
     private val isEmailValid: ValidateEmailUseCase,
+    private val googleAuthHelper: GoogleAuthHelper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginUiState())
@@ -65,31 +70,33 @@ class LoginViewModel @Inject constructor(
 
     fun onDoneActionClicked() {
         if (state.value.buttonState.isEnabled) {
-            loginUser()
+            loginWithEmail()
         }
     }
 
     fun onLoginButtonClicked() {
         if (state.value.buttonState.isEnabled) {
-            loginUser()
+            loginWithEmail()
         }
     }
 
     fun onSignupClicked() {
         viewModelScope.launch {
-            _sideEffects.emit(LoginUiEffect.OpenSignUp)
+            _sideEffects.emit(LoginUiEffect.NavigateToSignUp)
         }
     }
 
     fun onGoogleLoginClicked() {
-
+        viewModelScope.launch {
+            _sideEffects.emit(LoginUiEffect.RequestGoogleAuth(googleAuthHelper.signInRequest))
+        }
     }
 
     fun onFacebookLoginClicked() {
 
     }
 
-    private fun loginUser() = viewModelScope.launch {
+    private fun loginWithEmail() = viewModelScope.launch {
         signinUser(
             _state.value.email,
             _state.value.password,
@@ -105,8 +112,39 @@ class LoginViewModel @Inject constructor(
 
                 is TaskResult.Success -> {
                     setButtonLoading(false)
-                    _sideEffects.emit(LoginUiEffect.CloseAuth)
+                    _sideEffects.emit(LoginUiEffect.NavigateClose)
                 }
+            }
+        }
+    }
+
+    fun onSuccessfulGoogleSignInResponse(result: GetCredentialResponse) {
+        viewModelScope.launch {
+            googleAuthHelper
+                .handleSuccessSignIn(result)
+                .collect { authResult ->
+                    when (authResult) {
+                        TaskResult.Loading -> {
+                            _state.update { it.copy(loading = true) }
+                        }
+
+                        is TaskResult.Failure -> {
+                            _state.update { it.copy(loading = true) }
+                            _sideEffects.emit(LoginUiEffect.ShowAuthFailed)
+                        }
+
+                        is TaskResult.Success -> {
+                            _sideEffects.emit(LoginUiEffect.NavigateClose)
+                        }
+                    }
+                }
+        }
+    }
+
+    fun onFailedSignInResponse(exception: GetCredentialException) {
+        if (exception !is GetCredentialCancellationException) {
+            viewModelScope.launch {
+                _sideEffects.emit(LoginUiEffect.ShowAuthFailed)
             }
         }
     }

@@ -1,6 +1,12 @@
 package com.leoapps.waterapp.auth.login.presentation.model
 
+import androidx.credentials.GetCredentialRequest
+
 sealed interface LoginUiEffect {
-    object OpenSignUp : LoginUiEffect
-    object CloseAuth : LoginUiEffect
+    object NavigateToSignUp : LoginUiEffect
+    object NavigateClose : LoginUiEffect
+    object ShowAuthFailed : LoginUiEffect
+    class RequestGoogleAuth(
+        val request: GetCredentialRequest
+    ) : LoginUiEffect
 }

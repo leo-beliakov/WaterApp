@@ -1,8 +1,10 @@
 package com.leoapps.waterapp.auth.login.presentation
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
@@ -37,13 +40,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leoapps.waterapp.R
+import com.leoapps.waterapp.auth.common.presentation.rememberGoogleAuthHelper
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiEffect
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiState
 import com.leoapps.waterapp.auth.login.presentation.navigation.LoginNavigator
+import com.leoapps.waterapp.common.presentation.composables.loading_fullscreen.LoadingFullScreen
 import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButton
 import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.common.utils.clickableWithoutRipple
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -51,6 +57,9 @@ fun LoginScreen(
     navigator: LoginNavigator
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val scope = rememberCoroutineScope()
+    val authHelper = rememberGoogleAuthHelper()
 
     LoginScreen(
         state = state,
@@ -66,8 +75,24 @@ fun LoginScreen(
 
     CollectEventsWithLifecycle(viewModel.sideEffects) { effect ->
         when (effect) {
-            LoginUiEffect.CloseAuth -> navigator.closeAuth()
-            LoginUiEffect.OpenSignUp -> navigator.openSignup()
+            LoginUiEffect.NavigateClose -> navigator.closeAuth()
+            LoginUiEffect.NavigateToSignUp -> navigator.openSignup()
+            LoginUiEffect.ShowAuthFailed -> {
+                Log.d("MyTag", "Failure to sign in")
+            }
+
+            is LoginUiEffect.RequestGoogleAuth -> {
+                //For some reason, without switching to this scope we are getting
+                //"Sign-in request cancelled by WaterApp" toast on UI
+                scope.launch {
+                    authHelper.launchAuthModal(
+                        request = effect.request,
+                        onSuccessfulAuth = viewModel::onSuccessfulGoogleSignInResponse,
+                        onFailedAuth = viewModel::onFailedSignInResponse,
+                    )
+                }
+            }
+
         }
     }
 }
@@ -83,6 +108,37 @@ private fun LoginScreen(
     onSignupClicked: () -> Unit,
     onGoogleLoginClicked: () -> Unit,
     onFacebookLoginClicked: () -> Unit,
+) {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        LoginScreenContent(
+            state = state,
+            onEmailUpdated = onEmailUpdated,
+            onEmailFocusChanged = onEmailFocusChanged,
+            onPasswordUpdated = onPasswordUpdated,
+            onDoneActionClicked = onDoneActionClicked,
+            onLoginClicked = onLoginClicked,
+            onSignupClicked = onSignupClicked,
+            onGoogleLoginClicked = onGoogleLoginClicked,
+            onFacebookLoginClicked = onFacebookLoginClicked,
+        )
+
+        if (state.loading) {
+            LoadingFullScreen()
+        }
+    }
+}
+
+@Composable
+private fun LoginScreenContent(
+    state: LoginUiState,
+    onEmailUpdated: (String) -> Unit,
+    onEmailFocusChanged: (FocusState) -> Unit,
+    onPasswordUpdated: (String) -> Unit,
+    onDoneActionClicked: () -> Unit,
+    onLoginClicked: () -> Unit,
+    onSignupClicked: () -> Unit,
+    onGoogleLoginClicked: () -> Unit,
+    onFacebookLoginClicked: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,

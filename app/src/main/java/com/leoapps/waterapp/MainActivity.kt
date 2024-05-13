@@ -2,38 +2,15 @@ package com.leoapps.waterapp
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.GetCredentialResponse
-import androidx.credentials.exceptions.GetCredentialException
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.leoapps.waterapp.auth.common.data.GoogleAuthHelper
-import com.leoapps.waterapp.auth.common.presentation.rememberGoogleAuthHelper
-import com.leoapps.waterapp.common.domain.task_result.TaskResult
 import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
-import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
+import com.leoapps.waterapp.root.presentation.RootScreen
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -46,86 +23,12 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             WaterAppTheme {
-                TestScreen()
+                RootScreen()
             }
         }
     }
 }
 
-//GetCredentialCancellationException: [16] Cancelled by user.
-
-sealed interface TestUiEffect {
-    data class Launch(
-        val request: GetCredentialRequest
-    ) : TestUiEffect
-}
-
-
-@HiltViewModel
-class TestViewModel @Inject constructor(
-    val googleAuthHelper: GoogleAuthHelper,
-) : ViewModel() {
-
-    private val _sideEffects = MutableSharedFlow<TestUiEffect>()
-    val sideEffects: SharedFlow<TestUiEffect> = _sideEffects
-
-    fun handleSignIn(result: GetCredentialResponse) = viewModelScope.launch {
-        googleAuthHelper
-            .handleSuccessSignIn(result)
-            .collect { authResult ->
-                when (authResult) {
-                    TaskResult.Loading -> {}
-                    is TaskResult.Failure -> {}
-                    is TaskResult.Success -> {}
-                }
-            }
-    }
-
-    fun handleFailure(e: GetCredentialException) {
-        Log.d("MyTag", "GoogleButton Exception: $e")
-    }
-
-    fun onLoginClicked() {
-        viewModelScope.launch {
-            _sideEffects.emit(
-                TestUiEffect.Launch(googleAuthHelper.signInRequest)
-            )
-        }
-    }
-}
-
-@Composable
-fun TestScreen(
-    viewModel: TestViewModel = hiltViewModel()
-) {
-    val scope = rememberCoroutineScope()
-    val authHelper = rememberGoogleAuthHelper()
-
-    CollectEventsWithLifecycle(viewModel.sideEffects) { effect ->
-        when (effect) {
-            is TestUiEffect.Launch -> {
-                //For some reason, without switching to this scope we are getting
-                //"Sign-in request cancelled by WaterApp" toast on UI
-                scope.launch {
-                    authHelper.launchAuthModal(
-                        request = effect.request,
-                        onSuccessfulAuth = viewModel::handleSignIn,
-                        onFailedAuth = viewModel::handleFailure
-                    )
-                }
-            }
-        }
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Button(
-            onClick = viewModel::onLoginClicked,
-            modifier = Modifier.align(Alignment.Center)
-        ) {
-            Text(text = "LOGIN")
-        }
-    }
-}
 
 //TODO DONE:
 //1.1. Make beverages buttons work - DONE

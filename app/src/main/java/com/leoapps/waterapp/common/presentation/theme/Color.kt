@@ -20,3 +20,5 @@ val PurpleOpaque = Color(0x307062FA)
 val Gray = Color(0xFFF1F0F7)
 val Coffee = Color(0xFFFAF3E5)
 val Green = Color(0xFFEAFBE2)
+
+val Black_Opaque_70 = Color(0x77000000)
