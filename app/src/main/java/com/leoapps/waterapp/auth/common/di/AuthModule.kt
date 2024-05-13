@@ -1,5 +1,7 @@
 package com.leoapps.waterapp.auth.common.di
 
+import android.content.Context
+import androidx.credentials.CredentialManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -9,6 +11,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -24,5 +27,11 @@ interface AuthModule {
         @Singleton
         @Provides
         fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth
+
+        @Singleton
+        @Provides
+        fun provideCredentialsManager(
+            @ApplicationContext context: Context
+        ): CredentialManager = CredentialManager.create(context)
     }
 }

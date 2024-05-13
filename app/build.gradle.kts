@@ -82,6 +82,11 @@ dependencies {
     implementation(libs.google.firebase.auth)
     implementation(libs.google.gms.auth)
 
+    //Credentials
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.gms)
+    implementation(libs.google.auth.id)
+
     //Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
