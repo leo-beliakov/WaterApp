@@ -171,7 +171,7 @@ class SignUpViewModel @Inject constructor(
         buttonState = ProgressButtonState(
             isEnabled = false,
             isLoading = false,
-            textResId = R.string.sugnup_button_create,
+            textResId = R.string.signup_button_create,
         )
     )
 

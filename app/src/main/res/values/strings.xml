@@ -21,7 +21,9 @@
 
     <string name="profile_delete_account">Delete account</string>
 
-    <string name="sugnup_button_create">Create Account</string>
+    <string name="signup_button_create">Create Account</string>
+    <string name="signup_terms_and_conditions_full">By creating this account, I agree to the Terms &amp; Conditions</string>
+    <string name="signup_terms_and_conditions">Terms &amp; Conditions</string>
 
     <string name="password_validation_digits">At least one digit is present</string>
     <string name="password_validation_lowercase">At least one lowercase letter is present</string>

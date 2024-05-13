@@ -7,10 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.OutlinedTextField
@@ -22,9 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -44,7 +48,6 @@ import com.leoapps.waterapp.common.presentation.composables.progress_button.Prog
 import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButtonState
 import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
-import com.leoapps.waterapp.common.utils.clickableWithoutRipple
 
 @Composable
 fun SignupScreen(
@@ -97,6 +100,7 @@ private fun SignupScreen(
         modifier = Modifier
             .fillMaxSize()
             .safeDrawingPadding()
+            .verticalScroll(rememberScrollState())
             .padding(
                 vertical = 24.dp,
                 horizontal = 42.dp
@@ -147,30 +151,11 @@ private fun SignupScreen(
                 onDoneActionClicked()
             }
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(top = 24.dp)
-        ) {
-            Checkbox(
-                checked = state.termsAccepted,
-                onCheckedChange = onTermsChecked
-            )
-            Text(
-                text = "I agree to all the ",
-                style = TextStyle(
-                    fontSize = 16.sp
-                )
-            )
-            Text(
-                text = "Terms & Conditions.",
-                style = TextStyle(
-                    fontSize = 16.sp
-                ),
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickableWithoutRipple(onClick = onTermsClicked)
-            )
-        }
+        TermsAndConditionsCheckBox(
+            isChecked = state.termsAccepted,
+            onTermsChecked = onTermsChecked,
+            onTermsClicked = onTermsClicked,
+        )
         ProgressButton(
             state = state.buttonState,
             onClick = onCreateClicked,
@@ -183,37 +168,85 @@ private fun SignupScreen(
 }
 
 @Composable
+fun TermsAndConditionsCheckBox(
+    isChecked: Boolean,
+    onTermsChecked: (Boolean) -> Unit,
+    onTermsClicked: () -> Unit
+
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.padding(top = 24.dp)
+    ) {
+        Checkbox(
+            checked = isChecked,
+            onCheckedChange = onTermsChecked
+        )
+        TermsAndConditionsText(
+            onTermsClicked = onTermsClicked
+        )
+    }
+}
+
+@Composable
+fun TermsAndConditionsText(onTermsClicked: () -> Unit) {
+    val resources = LocalContext.current.resources
+    val fullText = resources.getString(R.string.signup_terms_and_conditions_full)
+    val termsText = resources.getString(R.string.signup_terms_and_conditions)
+
+    val annotatedString = buildAnnotatedString {
+        append(fullText.substringBefore(termsText))
+        pushStringAnnotation(tag = "URL", annotation = "open_terms")
+        pushStyle(SpanStyle(textDecoration = TextDecoration.Underline))
+        append(termsText)
+        pop()  // Pop style for underlining
+        pop()  // Pop annotation
+        append(fullText.substringAfter(termsText))
+    }
+
+    ClickableText(
+        text = annotatedString,
+        style = TextStyle(fontSize = 16.sp),
+        onClick = { offset ->
+            val clickedUrl = annotatedString
+                .getStringAnnotations(tag = "URL", start = offset, end = offset)
+                .firstOrNull()
+
+            if (clickedUrl?.item == "open_terms") {
+                onTermsClicked.invoke()
+            }
+        }
+    )
+}
+
+@Composable
 private fun PasswordInputField(
     password: String,
     passwordStrengthItems: List<PasswordStrengthItemState>,
     onPasswordUpdated: (String) -> Unit,
     onDoneActionClicked: () -> Unit,
 ) {
-    LazyColumn {
-        item {
-            OutlinedTextField(
-                value = password,
-                onValueChange = onPasswordUpdated,
-                label = { Text(text = stringResource(R.string.common_password)) },
-                maxLines = 1,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    autoCorrect = false,
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = { onDoneActionClicked() }
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp)
-            )
-        }
-        items(
-            items = passwordStrengthItems,
-            key = { it.textResId }
-        ) { strengthState ->
+    Column {
+        OutlinedTextField(
+            value = password,
+            onValueChange = onPasswordUpdated,
+            label = { Text(text = stringResource(R.string.common_password)) },
+            maxLines = 1,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                autoCorrect = false,
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { onDoneActionClicked() }
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp)
+        )
+        passwordStrengthItems.forEach { strengthState ->
             PasswordStrengthItem(
                 state = strengthState
             )
@@ -260,7 +293,7 @@ private fun SignupScreenPreview() {
                 buttonState = ProgressButtonState(
                     isEnabled = false,
                     isLoading = false,
-                    textResId = R.string.sugnup_button_create,
+                    textResId = R.string.signup_button_create,
                 )
             ),
             onNameUpdated = {},
