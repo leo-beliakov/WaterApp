@@ -5,6 +5,7 @@ import com.leoapps.waterapp.common.presentation.composables.progress_button.Prog
 
 data class SignupUiState(
     val name: String = "",
+    val loading: Boolean = false,
     val email: String = "",
     val password: String = "",
     val showNameInvalidError: Boolean = false,

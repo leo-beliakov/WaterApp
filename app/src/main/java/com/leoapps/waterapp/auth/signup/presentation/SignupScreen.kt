@@ -1,6 +1,7 @@
 package com.leoapps.waterapp.auth.signup.presentation
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +45,7 @@ import com.leoapps.waterapp.auth.signup.presentation.model.PasswordStrengthItemS
 import com.leoapps.waterapp.auth.signup.presentation.model.SignUpUiEffect
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiState
 import com.leoapps.waterapp.auth.signup.presentation.navigation.SignupNavigator
+import com.leoapps.waterapp.common.presentation.composables.loading_fullscreen.LoadingFullScreen
 import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButton
 import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButtonState
 import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
@@ -66,7 +68,6 @@ fun SignupScreen(
         onTermsChecked = viewModel::onTermsChecked,
         onTermsClicked = viewModel::onTermsClicked,
         onCreateClicked = viewModel::onCreateClicked,
-        onBackClicked = viewModel::onBackClicked,
         onDoneActionClicked = viewModel::onDoneActionClicked,
     )
 
@@ -90,7 +91,39 @@ private fun SignupScreen(
     onEmailFocusChanged: (FocusState) -> Unit,
     onTermsChecked: (Boolean) -> Unit,
     onTermsClicked: () -> Unit,
-    onBackClicked: () -> Unit,
+    onCreateClicked: () -> Unit,
+    onDoneActionClicked: () -> Unit,
+) {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        SignupScreenContent(
+            state = state,
+            onNameUpdated = onNameUpdated,
+            onEmailUpdated = onEmailUpdated,
+            onPasswordUpdated = onPasswordUpdated,
+            onNameFocusChanged = onNameFocusChanged,
+            onEmailFocusChanged = onEmailFocusChanged,
+            onTermsChecked = onTermsChecked,
+            onTermsClicked = onTermsClicked,
+            onCreateClicked = onCreateClicked,
+            onDoneActionClicked = onDoneActionClicked,
+        )
+
+        if (state.loading) {
+            LoadingFullScreen()
+        }
+    }
+}
+
+@Composable
+fun SignupScreenContent(
+    state: SignupUiState,
+    onNameUpdated: (String) -> Unit,
+    onEmailUpdated: (String) -> Unit,
+    onPasswordUpdated: (String) -> Unit,
+    onNameFocusChanged: (FocusState) -> Unit,
+    onEmailFocusChanged: (FocusState) -> Unit,
+    onTermsChecked: (Boolean) -> Unit,
+    onTermsClicked: () -> Unit,
     onCreateClicked: () -> Unit,
     onDoneActionClicked: () -> Unit,
 ) {
@@ -303,7 +336,6 @@ private fun SignupScreenPreview() {
             onEmailFocusChanged = {},
             onTermsChecked = {},
             onTermsClicked = {},
-            onBackClicked = {},
             onCreateClicked = {},
             onDoneActionClicked = {},
         )

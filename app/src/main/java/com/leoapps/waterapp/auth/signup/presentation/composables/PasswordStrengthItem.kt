@@ -11,10 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.leoapps.waterapp.R
 import com.leoapps.waterapp.auth.signup.presentation.model.PasswordStrengthItemState
 import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
@@ -26,17 +28,17 @@ fun PasswordStrengthItem(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.Start),
-        modifier = modifier.padding(vertical = 6.dp)
+        horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.Start),
+        modifier = modifier.padding(vertical = 3.dp)
     ) {
         Image(
             painter = painterResource(id = state.checkResult.iconResId),
             contentDescription = null,
-            modifier = Modifier.size(30.dp)
+            modifier = Modifier.size(20.dp)
         )
         Text(
             text = stringResource(id = state.textResId),
-            modifier = Modifier.alignByBaseline()
+            style = TextStyle.Default.copy(fontSize = 12.sp),
         )
     }
 }
