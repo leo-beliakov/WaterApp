@@ -3,9 +3,10 @@ package com.leoapps.waterapp.auth.login.presentation
 import androidx.compose.ui.focus.FocusState
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialCancellationException
-import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.facebook.login.LoginResult
+import com.leoapps.waterapp.auth.common.data.FacebookAuthHelper
 import com.leoapps.waterapp.auth.common.data.GoogleAuthHelper
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiEffect
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiState
@@ -26,7 +27,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val signinUser: SignInUserUseCase,
     private val isEmailValid: ValidateEmailUseCase,
-    private val googleAuthHelper: GoogleAuthHelper
+    private val googleAuthHelper: GoogleAuthHelper,
+    private val facebookAuthHelper: FacebookAuthHelper,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginUiState())
@@ -93,7 +95,9 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onFacebookLoginClicked() {
-
+        viewModelScope.launch {
+            _sideEffects.emit(LoginUiEffect.RequestFacebookAuth)
+        }
     }
 
     private fun loginWithEmail() = viewModelScope.launch {
@@ -118,30 +122,49 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun onSuccessfulGoogleSignInResponse(result: GetCredentialResponse) {
-        viewModelScope.launch {
-            googleAuthHelper
-                .handleSuccessSignIn(result)
-                .collect { authResult ->
-                    when (authResult) {
-                        TaskResult.Loading -> {
-                            _state.update { it.copy(loading = true) }
-                        }
+    fun onGoogleAuthSuccess(result: GetCredentialResponse) = viewModelScope.launch {
+        googleAuthHelper
+            .handleSuccessSignIn(result)
+            .collect { authResult ->
+                when (authResult) {
+                    TaskResult.Loading -> {
+                        _state.update { it.copy(loading = true) }
+                    }
 
-                        is TaskResult.Failure -> {
-                            _state.update { it.copy(loading = true) }
-                            _sideEffects.emit(LoginUiEffect.ShowAuthFailed)
-                        }
+                    is TaskResult.Failure -> {
+                        _state.update { it.copy(loading = true) }
+                        _sideEffects.emit(LoginUiEffect.ShowAuthFailed)
+                    }
 
-                        is TaskResult.Success -> {
-                            _sideEffects.emit(LoginUiEffect.NavigateClose)
-                        }
+                    is TaskResult.Success -> {
+                        _sideEffects.emit(LoginUiEffect.NavigateClose)
                     }
                 }
-        }
+            }
     }
 
-    fun onFailedSignInResponse(exception: GetCredentialException) {
+    fun onFacebookAuthSuccess(result: LoginResult) = viewModelScope.launch {
+        facebookAuthHelper
+            .handleSuccessSignIn(result)
+            .collect { authResult ->
+                when (authResult) {
+                    TaskResult.Loading -> {
+                        _state.update { it.copy(loading = true) }
+                    }
+
+                    is TaskResult.Failure -> {
+                        _state.update { it.copy(loading = true) }
+                        _sideEffects.emit(LoginUiEffect.ShowAuthFailed)
+                    }
+
+                    is TaskResult.Success -> {
+                        _sideEffects.emit(LoginUiEffect.NavigateClose)
+                    }
+                }
+            }
+    }
+
+    fun onFailedSignInResponse(exception: Exception) {
         if (exception !is GetCredentialCancellationException) {
             viewModelScope.launch {
                 _sideEffects.emit(LoginUiEffect.ShowAuthFailed)

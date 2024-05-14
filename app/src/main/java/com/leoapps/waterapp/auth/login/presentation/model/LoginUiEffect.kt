@@ -6,6 +6,7 @@ sealed interface LoginUiEffect {
     object NavigateToSignUp : LoginUiEffect
     object NavigateClose : LoginUiEffect
     object ShowAuthFailed : LoginUiEffect
+    object RequestFacebookAuth : LoginUiEffect
     class RequestGoogleAuth(
         val request: GetCredentialRequest
     ) : LoginUiEffect

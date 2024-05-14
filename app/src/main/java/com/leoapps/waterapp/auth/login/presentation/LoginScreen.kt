@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leoapps.waterapp.R
+import com.leoapps.waterapp.auth.common.presentation.rememberFacebookAuthHelper
 import com.leoapps.waterapp.auth.common.presentation.rememberGoogleAuthHelper
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiEffect
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiState
@@ -59,7 +60,8 @@ fun LoginScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val authHelper = rememberGoogleAuthHelper()
+    val googleAuthHelper = rememberGoogleAuthHelper()
+    val facebookAuthHelper = rememberFacebookAuthHelper()
 
     LoginScreen(
         state = state,
@@ -81,14 +83,21 @@ fun LoginScreen(
                 Log.d("MyTag", "Failure to sign in")
             }
 
+            LoginUiEffect.RequestFacebookAuth -> {
+                facebookAuthHelper.auth(
+                    onSuccess = viewModel::onFacebookAuthSuccess,
+                    onFailure = viewModel::onFailedSignInResponse,
+                )
+            }
+
             is LoginUiEffect.RequestGoogleAuth -> {
                 //For some reason, without switching to this scope we are getting
                 //"Sign-in request cancelled by WaterApp" toast on UI
                 scope.launch {
-                    authHelper.launchAuthModal(
+                    googleAuthHelper.auth(
                         request = effect.request,
-                        onSuccessfulAuth = viewModel::onSuccessfulGoogleSignInResponse,
-                        onFailedAuth = viewModel::onFailedSignInResponse,
+                        onSuccess = viewModel::onGoogleAuthSuccess,
+                        onFailure = viewModel::onFailedSignInResponse,
                     )
                 }
             }

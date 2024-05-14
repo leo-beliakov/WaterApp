@@ -26,16 +26,16 @@ class GoogleAuthUiHelper(
     private val context: Context,
     private val credentialManager: CredentialManager,
 ) {
-    suspend fun launchAuthModal(
-        onSuccessfulAuth: (GetCredentialResponse) -> Unit,
-        onFailedAuth: (GetCredentialException) -> Unit,
+    suspend fun auth(
+        onSuccess: (GetCredentialResponse) -> Unit,
+        onFailure: (GetCredentialException) -> Unit,
         request: GetCredentialRequest,
     ) {
         try {
             val authResult = credentialManager.getCredential(context, request)
-            onSuccessfulAuth(authResult)
+            onSuccess(authResult)
         } catch (e: GetCredentialException) {
-            onFailedAuth(e)
+            onFailure(e)
         }
     }
 }

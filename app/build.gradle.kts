@@ -82,6 +82,9 @@ dependencies {
     implementation(libs.google.firebase.auth)
     implementation(libs.google.gms.auth)
 
+    //Facebook
+    implementation(libs.facebook.sdk)
+
     //Credentials
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.gms)

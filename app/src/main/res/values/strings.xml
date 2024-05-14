@@ -1,4 +1,8 @@
 <resources>
+
+    <string name="facebook_app_id">1145403870135091</string>
+    <string name="facebook_client_token">65cf88742e5d42737b15a3fa6f13761d</string>
+
     <string name="app_name">WaterApp</string>
 
     <string name="home_screen_title">Current volume</string>
