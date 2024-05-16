@@ -162,6 +162,7 @@ private fun SignupScreenContent(
     onBackClicked: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -170,7 +171,7 @@ private fun SignupScreenContent(
             title = "Create an Account",
             showCloseIcon = true,
             onCloseClick = onBackClicked,
-            isElevated = true,
+            isElevated = scrollState.canScrollBackward,
             modifier = Modifier
         )
         Column(
@@ -178,7 +179,7 @@ private fun SignupScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .navigationBarsPadding()
                 .padding(
                     vertical = 24.dp,

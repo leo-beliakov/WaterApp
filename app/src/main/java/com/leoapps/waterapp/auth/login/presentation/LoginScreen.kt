@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -145,14 +147,17 @@ private fun LoginScreenContent(
     onGoogleLoginClicked: () -> Unit,
     onFacebookLoginClicked: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .safeDrawingPadding()
     ) {
         Toolbar(
-            title = "Log In",
+            title = stringResource(id = R.string.common_login),
             showCloseIcon = true,
+            isElevated = scrollState.canScrollBackward,
             onCloseClick = onBackClicked,
         )
         Column(
@@ -160,6 +165,7 @@ private fun LoginScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .safeDrawingPadding()
                 .padding(
                     vertical = 24.dp,
