@@ -1,5 +1,6 @@
 package com.leoapps.waterapp.auth.signup.domain
 
+import com.google.firebase.auth.FirebaseUser
 import com.leoapps.waterapp.auth.common.domain.AuthRepository
 import com.leoapps.waterapp.common.domain.task_result.TaskResult
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +12,7 @@ class SignInUserUseCase @Inject constructor(
     operator suspend fun invoke(
         email: String,
         password: String
-    ): Flow<TaskResult<Unit>> {
+    ): Flow<TaskResult<FirebaseUser>> {
         return repository.signinUser(email, password)
     }
 }

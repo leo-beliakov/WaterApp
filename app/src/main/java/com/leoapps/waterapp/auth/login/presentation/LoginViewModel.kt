@@ -6,6 +6,7 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.facebook.login.LoginResult
+import com.google.firebase.auth.FirebaseUser
 import com.leoapps.waterapp.auth.common.data.FacebookAuthHelper
 import com.leoapps.waterapp.auth.common.data.GoogleAuthHelper
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiEffect
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -71,13 +71,13 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onDoneActionClicked() {
-        if (state.value.buttonState.isEnabled) {
+        if (state.value.loginButtonEnabled) {
             loginWithEmail()
         }
     }
 
     fun onLoginButtonClicked() {
-        if (state.value.buttonState.isEnabled) {
+        if (state.value.loginButtonEnabled) {
             loginWithEmail()
         }
     }
@@ -101,67 +101,20 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun loginWithEmail() = viewModelScope.launch {
-        signinUser(
-            _state.value.email,
-            _state.value.password,
-        ).collectLatest { signinResult ->
-            when (signinResult) {
-                TaskResult.Loading -> {
-                    setButtonLoading(true)
-                }
-
-                is TaskResult.Failure -> {
-                    setButtonLoading(false)
-                }
-
-                is TaskResult.Success -> {
-                    setButtonLoading(false)
-                    _sideEffects.emit(LoginUiEffect.NavigateClose)
-                }
-            }
-        }
+        signinUser(_state.value.email, _state.value.password)
+            .collect(::handleAuthResult)
     }
 
     fun onGoogleAuthSuccess(result: GetCredentialResponse) = viewModelScope.launch {
         googleAuthHelper
             .handleSuccessSignIn(result)
-            .collect { authResult ->
-                when (authResult) {
-                    TaskResult.Loading -> {
-                        _state.update { it.copy(loading = true) }
-                    }
-
-                    is TaskResult.Failure -> {
-                        _state.update { it.copy(loading = true) }
-                        _sideEffects.emit(LoginUiEffect.ShowAuthFailed)
-                    }
-
-                    is TaskResult.Success -> {
-                        _sideEffects.emit(LoginUiEffect.NavigateClose)
-                    }
-                }
-            }
+            .collect(::handleAuthResult)
     }
 
     fun onFacebookAuthSuccess(result: LoginResult) = viewModelScope.launch {
         facebookAuthHelper
             .handleSuccessSignIn(result)
-            .collect { authResult ->
-                when (authResult) {
-                    TaskResult.Loading -> {
-                        _state.update { it.copy(loading = true) }
-                    }
-
-                    is TaskResult.Failure -> {
-                        _state.update { it.copy(loading = true) }
-                        _sideEffects.emit(LoginUiEffect.ShowAuthFailed)
-                    }
-
-                    is TaskResult.Success -> {
-                        _sideEffects.emit(LoginUiEffect.NavigateClose)
-                    }
-                }
-            }
+            .collect(::handleAuthResult)
     }
 
     fun onFailedSignInResponse(exception: Exception) {
@@ -172,25 +125,36 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    fun onBackClicked() {
+        viewModelScope.launch {
+            _sideEffects.emit(LoginUiEffect.NavigateClose)
+        }
+    }
+
     private fun updateLoginButtonState() {
         _state.update {
             it.copy(
-                buttonState = it.buttonState.copy(
-                    isEnabled = it.email.isNotEmpty() &&
+                loginButtonEnabled = it.email.isNotEmpty() &&
                             isEmailValid(it.email) &&
                             it.password.isNotEmpty()
-                )
             )
         }
     }
 
-    private fun setButtonLoading(isLoading: Boolean) {
-        _state.update {
-            it.copy(
-                buttonState = it.buttonState.copy(
-                    isLoading = isLoading
-                )
-            )
+    private suspend fun handleAuthResult(authResult: TaskResult<FirebaseUser>) {
+        when (authResult) {
+            TaskResult.Loading -> {
+                _state.update { it.copy(loading = true) }
+            }
+
+            is TaskResult.Failure -> {
+                _state.update { it.copy(loading = true) }
+                _sideEffects.emit(LoginUiEffect.ShowAuthFailed)
+            }
+
+            is TaskResult.Success -> {
+                _sideEffects.emit(LoginUiEffect.NavigateClose)
+            }
         }
     }
 }

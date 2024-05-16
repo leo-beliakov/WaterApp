@@ -1,23 +1,17 @@
 package com.leoapps.waterapp.auth.login.presentation
 
 import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,9 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,13 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leoapps.waterapp.R
+import com.leoapps.waterapp.auth.common.presentation.composables.FederatedIdentityButtons
 import com.leoapps.waterapp.auth.common.presentation.rememberFacebookAuthHelper
 import com.leoapps.waterapp.auth.common.presentation.rememberGoogleAuthHelper
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiEffect
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiState
 import com.leoapps.waterapp.auth.login.presentation.navigation.LoginNavigator
 import com.leoapps.waterapp.common.presentation.composables.loading_fullscreen.LoadingFullScreen
-import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButton
+import com.leoapps.waterapp.common.presentation.composables.toolbar.Toolbar
 import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
 import com.leoapps.waterapp.common.utils.clickableWithoutRipple
@@ -73,6 +66,7 @@ fun LoginScreen(
         onSignupClicked = viewModel::onSignupClicked,
         onGoogleLoginClicked = viewModel::onGoogleLoginClicked,
         onFacebookLoginClicked = viewModel::onFacebookLoginClicked,
+        onBackClicked = viewModel::onBackClicked,
     )
 
     CollectEventsWithLifecycle(viewModel.sideEffects) { effect ->
@@ -101,7 +95,6 @@ fun LoginScreen(
                     )
                 }
             }
-
         }
     }
 }
@@ -116,6 +109,7 @@ private fun LoginScreen(
     onLoginClicked: () -> Unit,
     onSignupClicked: () -> Unit,
     onGoogleLoginClicked: () -> Unit,
+    onBackClicked: () -> Unit,
     onFacebookLoginClicked: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -128,6 +122,7 @@ private fun LoginScreen(
             onLoginClicked = onLoginClicked,
             onSignupClicked = onSignupClicked,
             onGoogleLoginClicked = onGoogleLoginClicked,
+            onBackClicked = onBackClicked,
             onFacebookLoginClicked = onFacebookLoginClicked,
         )
 
@@ -146,71 +141,47 @@ private fun LoginScreenContent(
     onDoneActionClicked: () -> Unit,
     onLoginClicked: () -> Unit,
     onSignupClicked: () -> Unit,
+    onBackClicked: () -> Unit,
     onGoogleLoginClicked: () -> Unit,
     onFacebookLoginClicked: () -> Unit
 ) {
     Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .safeDrawingPadding()
-            .padding(
-                vertical = 24.dp,
-                horizontal = 42.dp
-            )
     ) {
-        EmailLoginForm(
-            state = state,
-            onEmailUpdated = onEmailUpdated,
-            onEmailFocusChanged = onEmailFocusChanged,
-            onPasswordUpdated = onPasswordUpdated,
-            onDoneActionClicked = onDoneActionClicked,
-            onLoginClicked = onLoginClicked,
+        Toolbar(
+            title = "Log In",
+            showCloseIcon = true,
+            onCloseClick = onBackClicked,
         )
-        MiddleScreenDivider(
-            modifier = Modifier.padding(top = 24.dp)
-        )
-        FederatedIdentityButtons(
-            onGoogleLoginClicked = onGoogleLoginClicked,
-            onFacebookLoginClicked = onFacebookLoginClicked,
-            modifier = Modifier.padding(top = 24.dp)
-        )
-        SignupFooter(
-            onSignupClicked = onSignupClicked,
-            modifier = Modifier.padding(top = 8.dp)
-        )
-    }
-}
-
-@Composable
-private fun FederatedIdentityButtons(
-    onGoogleLoginClicked: () -> Unit,
-    onFacebookLoginClicked: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier
-    ) {
-        OutlinedButton(
-            onClick = onGoogleLoginClicked,
-            modifier = Modifier.weight(1f)
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .safeDrawingPadding()
+                .padding(
+                    vertical = 24.dp,
+                    horizontal = 42.dp
+                )
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_google),
-                contentDescription = null,
-                modifier = Modifier.size(32.dp)
+            EmailLoginForm(
+                state = state,
+                onEmailUpdated = onEmailUpdated,
+                onEmailFocusChanged = onEmailFocusChanged,
+                onPasswordUpdated = onPasswordUpdated,
+                onDoneActionClicked = onDoneActionClicked,
+                onLoginClicked = onLoginClicked,
             )
-        }
-        OutlinedButton(
-            onClick = onFacebookLoginClicked,
-            modifier = Modifier.weight(1f)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_facebook),
-                contentDescription = null,
-                modifier = Modifier.size(32.dp)
+            FederatedIdentityButtons(
+                onGoogleLoginClicked = onGoogleLoginClicked,
+                onFacebookLoginClicked = onFacebookLoginClicked,
+                modifier = Modifier.padding(top = 24.dp)
+            )
+            SignupFooter(
+                onSignupClicked = onSignupClicked,
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
     }
@@ -268,43 +239,14 @@ fun EmailLoginForm(
             .fillMaxWidth()
             .padding(top = 12.dp)
     )
-    ProgressButton(
-        state = state.buttonState,
+    Button(
+        enabled = state.loginButtonEnabled,
         onClick = onLoginClicked,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 12.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Red
-        )
-    )
-}
-
-@Composable
-private fun MiddleScreenDivider(
-    modifier: Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.fillMaxWidth()
     ) {
-        Spacer(
-            modifier = Modifier
-                .weight(1f)
-                .height(2.dp)
-                .background(color = Color.Gray)
-        )
-        Text(
-            text = "or",
-            color = Color.Gray
-        )
-        Spacer(
-            modifier = Modifier
-                .weight(1f)
-                .height(2.dp)
-                .background(color = Color.Gray)
-        )
+        Text(text = stringResource(id = R.string.common_login))
     }
 }
 
@@ -342,6 +284,7 @@ private fun LoginScreenPreview() {
             onSignupClicked = {},
             onGoogleLoginClicked = {},
             onFacebookLoginClicked = {},
+            onBackClicked = {},
         )
     }
 }

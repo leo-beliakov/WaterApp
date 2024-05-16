@@ -1,8 +1,10 @@
 package com.leoapps.waterapp.auth.common.data
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.userProfileChangeRequest
 import com.leoapps.waterapp.auth.common.domain.AuthRepository
+import com.leoapps.waterapp.auth.common.domain.model.AuthException
 import com.leoapps.waterapp.auth.common.domain.model.User
 import com.leoapps.waterapp.common.domain.task_result.TaskResult
 import kotlinx.coroutines.Dispatchers
@@ -58,13 +60,13 @@ class FirebaseAuthRepository @Inject constructor(
     override suspend fun signinUser(
         email: String,
         password: String
-    ) = flow<TaskResult<Unit>> {
+    ) = flow<TaskResult<FirebaseUser>> {
         emit(TaskResult.Loading)
 
-        auth.signInWithEmailAndPassword(email, password)
-            .await()
+        val authResult = auth.signInWithEmailAndPassword(email, password).await()
+        val user = authResult.user ?: throw AuthException("User is null")
 
-        emit(TaskResult.Success(Unit))
+        emit(TaskResult.Success(user))
     }.catch {
         emit(TaskResult.Failure(it))
     }.flowOn(Dispatchers.IO)
@@ -75,21 +77,24 @@ class FirebaseAuthRepository @Inject constructor(
         name: String,
         email: String,
         password: String
-    ) = flow<TaskResult<Unit>> {
+    ) = flow<TaskResult<FirebaseUser>> {
         emit(TaskResult.Loading)
 
-        val signupResult = auth
+        val authResult = auth
             .createUserWithEmailAndPassword(email, password)
             .await()
 
         val profileUpdates = userProfileChangeRequest {
             displayName = name
         }
-        signupResult.user
+
+        authResult.user
             ?.updateProfile(profileUpdates)
             ?.await()
 
-        emit(TaskResult.Success(Unit))
+        val user = authResult?.user ?: throw AuthException("User is null")
+
+        emit(TaskResult.Success(user))
     }.catch {
         emit(TaskResult.Failure(it))
     }.flowOn(Dispatchers.IO)

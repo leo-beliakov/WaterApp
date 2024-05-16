@@ -1,9 +1,15 @@
 package com.leoapps.waterapp.auth.signup.presentation
 
 import androidx.compose.ui.focus.FocusState
+import androidx.credentials.GetCredentialResponse
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.facebook.login.LoginResult
+import com.google.firebase.auth.FirebaseUser
 import com.leoapps.waterapp.R
+import com.leoapps.waterapp.auth.common.data.FacebookAuthHelper
+import com.leoapps.waterapp.auth.common.data.GoogleAuthHelper
 import com.leoapps.waterapp.auth.signup.domain.SignUpUserUseCase
 import com.leoapps.waterapp.auth.signup.domain.ValidateEmailUseCase
 import com.leoapps.waterapp.auth.signup.domain.ValidateNameUseCase
@@ -13,13 +19,11 @@ import com.leoapps.waterapp.auth.signup.presentation.model.PasswordStrengthItemS
 import com.leoapps.waterapp.auth.signup.presentation.model.SignUpUiEffect
 import com.leoapps.waterapp.auth.signup.presentation.model.SignupUiState
 import com.leoapps.waterapp.common.domain.task_result.TaskResult
-import com.leoapps.waterapp.common.presentation.composables.progress_button.ProgressButtonState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,6 +34,8 @@ class SignUpViewModel @Inject constructor(
     private val validatePassword: ValidatePasswordUseCase,
     private val isNameValid: ValidateNameUseCase,
     private val isEmailValid: ValidateEmailUseCase,
+    private val googleAuthHelper: GoogleAuthHelper,
+    private val facebookAuthHelper: FacebookAuthHelper,
     private val mapper: SignupMapper
 ) : ViewModel() {
 
@@ -93,7 +99,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onDoneActionClicked() {
-        if (state.value.buttonState.isEnabled) {
+        if (state.value.createAccountButtonEnabled) {
             createAccount()
         }
     }
@@ -104,7 +110,7 @@ class SignUpViewModel @Inject constructor(
 
     fun onBackClicked() {
         viewModelScope.launch {
-            _sideEffects.emit(SignUpUiEffect.GoBack)
+            _sideEffects.emit(SignUpUiEffect.NavigateBack)
         }
     }
 
@@ -114,27 +120,64 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun createAccount() = viewModelScope.launch {
-        signUpUser(
-            _state.value.name,
-            _state.value.email,
-            _state.value.password,
-        ).collectLatest { signupResult ->
-            when (signupResult) {
-                TaskResult.Loading -> {
-                    setButtonLoading(true)
-                }
-
-                is TaskResult.Failure -> {
-                    setButtonLoading(false)
-                }
-
-                is TaskResult.Success -> {
-                    setButtonLoading(false)
-                    _sideEffects.emit(SignUpUiEffect.CloseAuth)
-                }
+    fun onNameFocusChanged(focusState: FocusState) {
+        if (!focusState.isFocused && state.value.name.isNotEmpty()) {
+            _state.update {
+                it.copy(
+                    showNameInvalidError = isNameValid(it.name)
+                )
             }
         }
+    }
+
+    fun onEmailFocusChanged(focusState: FocusState) {
+        if (!focusState.isFocused && state.value.email.isNotEmpty()) {
+            _state.update {
+                it.copy(
+                    showNameInvalidError = isEmailValid(it.email)
+                )
+            }
+        }
+    }
+
+    fun onGoogleLoginClicked() {
+        viewModelScope.launch {
+            _sideEffects.emit(SignUpUiEffect.RequestGoogleAuth(googleAuthHelper.signInRequest))
+        }
+    }
+
+    fun onFacebookLoginClicked() {
+        viewModelScope.launch {
+            _sideEffects.emit(SignUpUiEffect.RequestFacebookAuth)
+        }
+    }
+
+    fun onGoogleAuthSuccess(result: GetCredentialResponse) = viewModelScope.launch {
+        googleAuthHelper
+            .handleSuccessSignIn(result)
+            .collect(::handleAuthResult)
+    }
+
+    fun onFacebookAuthSuccess(result: LoginResult) = viewModelScope.launch {
+        facebookAuthHelper
+            .handleSuccessSignIn(result)
+            .collect(::handleAuthResult)
+    }
+
+    fun onFailedSignInResponse(exception: Exception) {
+        if (exception !is GetCredentialCancellationException) {
+            viewModelScope.launch {
+                _sideEffects.emit(SignUpUiEffect.ShowAuthFailed)
+            }
+        }
+    }
+
+    private fun createAccount() = viewModelScope.launch {
+        signUpUser(
+            name = _state.value.name,
+            email = _state.value.email,
+            password = _state.value.password,
+        ).collect(::handleAuthResult)
     }
 
     private fun getInitialState() = SignupUiState(
@@ -168,56 +211,37 @@ class SignUpViewModel @Inject constructor(
             ),
         ),
         termsAccepted = false,
-        buttonState = ProgressButtonState(
-            isEnabled = false,
-            isLoading = false,
-            textResId = R.string.signup_button_create,
-        )
+        createAccountButtonEnabled = false
     )
 
     private fun updateCreateButtonState() {
         _state.update {
             it.copy(
-                buttonState = it.buttonState.copy(
-                    isEnabled = it.termsAccepted &&
-                            it.name.isNotEmpty() &&
-                            it.email.isNotEmpty() &&
-                            isEmailValid(it.email) &&
-                            it.password.isNotEmpty() &&
-                            it.passwordStrengths.all {
-                                it.checkResult == PasswordStrengthItemState.CheckResult.CHECK_SUCCED
-                            }
-                )
+                createAccountButtonEnabled = it.termsAccepted &&
+                        it.name.isNotEmpty() &&
+                        it.email.isNotEmpty() &&
+                        isEmailValid(it.email) &&
+                        it.password.isNotEmpty() &&
+                        it.passwordStrengths.all {
+                            it.checkResult == PasswordStrengthItemState.CheckResult.CHECK_SUCCED
+                        }
             )
         }
     }
 
-    private fun setButtonLoading(isLoading: Boolean) {
-        _state.update {
-            it.copy(
-                buttonState = it.buttonState.copy(
-                    isLoading = isLoading
-                )
-            )
-        }
-    }
-
-    fun onNameFocusChanged(focusState: FocusState) {
-        if (!focusState.isFocused && state.value.name.isNotEmpty()) {
-            _state.update {
-                it.copy(
-                    showNameInvalidError = isNameValid(it.name)
-                )
+    private suspend fun handleAuthResult(authResult: TaskResult<FirebaseUser>) {
+        when (authResult) {
+            TaskResult.Loading -> {
+                _state.update { it.copy(loading = true) }
             }
-        }
-    }
 
-    fun onEmailFocusChanged(focusState: FocusState) {
-        if (!focusState.isFocused && state.value.email.isNotEmpty()) {
-            _state.update {
-                it.copy(
-                    showNameInvalidError = isEmailValid(it.email)
-                )
+            is TaskResult.Failure -> {
+                _state.update { it.copy(loading = true) }
+                _sideEffects.emit(SignUpUiEffect.ShowAuthFailed)
+            }
+
+            is TaskResult.Success -> {
+                _sideEffects.emit(SignUpUiEffect.NavigateCloseAuth)
             }
         }
     }

@@ -50,10 +50,6 @@ class PasswordStrengthStateProvider : PreviewParameterProvider<PasswordStrengthI
             checkResult = PasswordStrengthItemState.CheckResult.NOT_CHECKED
         ),
         PasswordStrengthItemState(
-            textResId = R.string.password_validation_length,
-            checkResult = PasswordStrengthItemState.CheckResult.CHECK_FAILED
-        ),
-        PasswordStrengthItemState(
             textResId = R.string.password_validation_digits,
             checkResult = PasswordStrengthItemState.CheckResult.CHECK_SUCCED
         ),
