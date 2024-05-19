@@ -91,6 +91,9 @@ dependencies {
     implementation(libs.androidx.credentials.gms)
     implementation(libs.google.auth.id)
 
+    //Timber
+    implementation(libs.jakewharton.timber)
+
     //Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

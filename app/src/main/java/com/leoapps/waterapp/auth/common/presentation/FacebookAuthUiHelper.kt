@@ -10,6 +10,7 @@ import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
+import timber.log.Timber
 
 @Composable
 fun rememberFacebookAuthHelper(): FacebookAuthUiHelper {
@@ -50,14 +51,16 @@ class FacebookAuthUiHelper(
     fun register() {
         loginManager.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onCancel() {
-                // Nothing to do
+                Timber.i("Facebook Auth onCancel")
             }
 
             override fun onError(error: FacebookException) {
+                Timber.e(error, "Facebook Auth onError")
                 onFailure?.invoke(error)
             }
 
             override fun onSuccess(result: LoginResult) {
+                Timber.i("Facebook Auth onSuccess")
                 onSuccess?.invoke(result)
             }
         })

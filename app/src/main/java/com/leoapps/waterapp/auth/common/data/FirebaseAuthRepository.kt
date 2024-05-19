@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 class FirebaseAuthRepository @Inject constructor(
@@ -33,6 +34,7 @@ class FirebaseAuthRepository @Inject constructor(
 
     init {
         auth.addAuthStateListener { authInfo ->
+            Timber.i("Firebase Auth State Changed email: ${authInfo.currentUser?.email}")
             currentUser.value = authInfo.currentUser?.let { firebaseUser ->
                 User(
                     id = firebaseUser.uid,
@@ -57,6 +59,7 @@ class FirebaseAuthRepository @Inject constructor(
 
         emit(TaskResult.Success(Unit))
     }.catch {
+        Timber.e(it, "Delete User Failed")
         emit(TaskResult.Failure(it))
     }.flowOn(Dispatchers.IO)
 
@@ -89,6 +92,7 @@ class FirebaseAuthRepository @Inject constructor(
 
         emit(TaskResult.Success(user.mapToDomain()))
     }.catch {
+        Timber.e(it, "Create Account Failed")
         emit(TaskResult.Failure(it))
     }.flowOn(Dispatchers.IO)
 
@@ -107,6 +111,7 @@ class FirebaseAuthRepository @Inject constructor(
 
         emit(TaskResult.Success(firebaseUser.mapToDomain()))
     }.catch {
+        Timber.e(it, "Login Failed")
         emit(TaskResult.Failure(it))
     }.flowOn(Dispatchers.IO)
 

@@ -9,6 +9,7 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import timber.log.Timber
 
 private const val SERVER_CLIENT_ID =
     "1006655469675-f3algbiterhbl5qk8a5ck8kirngo5ufu.apps.googleusercontent.com"
@@ -47,8 +48,10 @@ class GoogleAuthUiHelper(
     ) {
         try {
             val authResult = credentialManager.getCredential(context, signInRequest)
+            Timber.i("Google Auth onSuccess")
             onSuccess(authResult)
         } catch (e: GetCredentialException) {
+            Timber.e(e, "Google Auth onError")
             onFailure(e)
         }
     }
