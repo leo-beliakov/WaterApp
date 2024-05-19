@@ -42,6 +42,7 @@ interface DataBindsModule {
     @Binds
     fun bindsRepository(impl: WaterBalanceRepositoryLocalImpl): WaterBalanceRepository
 
+    @Singleton
     @Binds
     fun bindsFirebaseRepository(impl: UserRepositoryFirebaseImpl): UserRepository
 }

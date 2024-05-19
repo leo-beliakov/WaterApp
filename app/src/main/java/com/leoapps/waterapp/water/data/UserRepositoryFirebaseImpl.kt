@@ -8,7 +8,8 @@ import com.leoapps.waterapp.auth.common.domain.AuthRepository
 import com.leoapps.waterapp.auth.common.domain.model.User
 import com.leoapps.waterapp.common.domain.task_result.TaskResult
 import com.leoapps.waterapp.water.domain.UserRepository
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,12 +19,16 @@ import javax.inject.Inject
 
 class UserRepositoryFirebaseImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
 ) : UserRepository {
+
     private val currentUser = MutableStateFlow<User?>(null)
 
-    suspend fun initialize() = coroutineScope {
-        launch {
+    //todo think about cancelation?
+    private val scope = CoroutineScope(Job())
+
+    init {
+        scope.launch {
             authRepository.getCurrentUserAsFlow()
                 .collect { authUser ->
                     when {
@@ -89,7 +94,8 @@ class UserRepositoryFirebaseImpl @Inject constructor(
                 .get()
                 .await()
 
-            val user = document.toObject<User>() ?: throw NullPointerException("user is null")
+            val user =
+                document.toObject<User>() ?: throw NullPointerException("user is null")
 
             TaskResult.Success(user)
         } catch (e: FirebaseException) {

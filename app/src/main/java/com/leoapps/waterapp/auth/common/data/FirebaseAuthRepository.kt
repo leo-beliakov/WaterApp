@@ -153,7 +153,7 @@ class FirebaseAuthRepository @Inject constructor(
     }
 }
 
-private fun FirebaseUser.mapToDomain(): User {
+fun FirebaseUser.mapToDomain(): User {
     return User(
         id = uid,
         name = displayName,

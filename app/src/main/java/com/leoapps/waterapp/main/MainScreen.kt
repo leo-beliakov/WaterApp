@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -31,7 +32,7 @@ import com.leoapps.waterapp.water.WaterScreen
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
-    onLoginClicked: () -> Unit
+    rootNavController: NavController,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = rememberNavController()
@@ -51,7 +52,7 @@ fun MainScreen(
             }
             composable("profile") {
                 ProfileScreen(
-                    navigator = ProfileNavigator(navController)
+                    navigator = ProfileNavigator(rootNavController)
                 )
             }
         }

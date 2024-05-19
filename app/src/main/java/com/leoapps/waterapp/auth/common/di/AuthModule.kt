@@ -19,6 +19,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 interface AuthModule {
 
+    @Singleton
     @Binds
     fun bindsRepository(impl: FirebaseAuthRepository): AuthRepository
 
