@@ -6,12 +6,11 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.facebook.login.LoginResult
-import com.google.firebase.auth.FirebaseUser
-import com.leoapps.waterapp.auth.common.data.FacebookAuthHelper
-import com.leoapps.waterapp.auth.common.data.GoogleAuthHelper
+import com.leoapps.waterapp.auth.common.domain.LogInUseCase
+import com.leoapps.waterapp.auth.common.domain.model.EmailCredential
+import com.leoapps.waterapp.auth.common.domain.model.User
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiEffect
 import com.leoapps.waterapp.auth.login.presentation.model.LoginUiState
-import com.leoapps.waterapp.auth.signup.domain.SignInUserUseCase
 import com.leoapps.waterapp.auth.signup.domain.ValidateEmailUseCase
 import com.leoapps.waterapp.common.domain.task_result.TaskResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,10 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val signinUser: SignInUserUseCase,
-    private val isEmailValid: ValidateEmailUseCase,
-    private val googleAuthHelper: GoogleAuthHelper,
-    private val facebookAuthHelper: FacebookAuthHelper,
+    private val logIn: LogInUseCase,
+    private val isEmailValid: ValidateEmailUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginUiState())
@@ -90,7 +87,7 @@ class LoginViewModel @Inject constructor(
 
     fun onGoogleLoginClicked() {
         viewModelScope.launch {
-            _sideEffects.emit(LoginUiEffect.RequestGoogleAuth(googleAuthHelper.signInRequest))
+            _sideEffects.emit(LoginUiEffect.RequestGoogleAuth)
         }
     }
 
@@ -101,20 +98,16 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun loginWithEmail() = viewModelScope.launch {
-        signinUser(_state.value.email, _state.value.password)
+        logIn(EmailCredential(_state.value.email, _state.value.password))
             .collect(::handleAuthResult)
     }
 
     fun onGoogleAuthSuccess(result: GetCredentialResponse) = viewModelScope.launch {
-        googleAuthHelper
-            .handleSuccessSignIn(result)
-            .collect(::handleAuthResult)
+        logIn(result).collect(::handleAuthResult)
     }
 
     fun onFacebookAuthSuccess(result: LoginResult) = viewModelScope.launch {
-        facebookAuthHelper
-            .handleSuccessSignIn(result)
-            .collect(::handleAuthResult)
+        logIn(result).collect(::handleAuthResult)
     }
 
     fun onFailedSignInResponse(exception: Exception) {
@@ -135,13 +128,13 @@ class LoginViewModel @Inject constructor(
         _state.update {
             it.copy(
                 loginButtonEnabled = it.email.isNotEmpty() &&
-                            isEmailValid(it.email) &&
-                            it.password.isNotEmpty()
+                        isEmailValid(it.email) &&
+                        it.password.isNotEmpty()
             )
         }
     }
 
-    private suspend fun handleAuthResult(authResult: TaskResult<FirebaseUser>) {
+    private suspend fun handleAuthResult(authResult: TaskResult<User>) {
         when (authResult) {
             TaskResult.Loading -> {
                 _state.update { it.copy(loading = true) }

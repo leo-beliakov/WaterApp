@@ -96,7 +96,6 @@ fun SignupScreen(
                 //"Sign-in request cancelled by WaterApp" toast on UI
                 scope.launch {
                     googleAuthHelper.auth(
-                        request = effect.request,
                         onSuccess = viewModel::onGoogleAuthSuccess,
                         onFailure = viewModel::onFailedSignInResponse,
                     )

@@ -7,6 +7,6 @@ class LogoutUserUseCase @Inject constructor(
 ) {
 
     operator suspend fun invoke() {
-        return repository.logoutUser()
+        return repository.logOut()
     }
 }

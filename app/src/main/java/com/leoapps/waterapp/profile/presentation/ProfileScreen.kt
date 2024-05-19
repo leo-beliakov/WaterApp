@@ -65,6 +65,18 @@ private fun ProfileScreen(
             Text(
                 text = state.username
             )
+            Text(
+                text = state.email
+            )
+            Text(
+                text = state.goal
+            )
+            Text(
+                text = state.progress
+            )
+            Text(
+                text = state.previousRecords
+            )
         }
         Spacer(
             modifier = Modifier.weight(

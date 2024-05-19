@@ -3,9 +3,9 @@ package com.leoapps.waterapp.home.day
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leoapps.waterapp.common.vibrator.domain.WaterAppVibrator
-import com.leoapps.waterapp.home.day.model.BeverageItem
 import com.leoapps.waterapp.home.day.model.DayProgressState
 import com.leoapps.waterapp.home.day.model.DayUiState
+import com.leoapps.waterapp.home.day.model.DrinkItem
 import com.leoapps.waterapp.home.day.model.HomeDayUiEffect
 import com.leoapps.waterapp.water.domain.WaterBalanceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -64,13 +64,13 @@ class HomeDayViewModel @Inject constructor(
 
     private fun getInitialUiState() = DayUiState(
         progressState = DayUiState.ProgressState(),
-        beverageItems = BeverageItem.entries,
+        drinkItems = DrinkItem.entries,
     )
 
-    fun onBeverageClick(beverageItem: BeverageItem) {
+    fun onBeverageClick(drinkItem: DrinkItem) {
         viewModelScope.launch {
             vibrator.vibrateOnClick()
-            val updatedWaterBalance = goalState.value.consumedMl + beverageItem.waterBalanceDelta
+            val updatedWaterBalance = goalState.value.consumedMl + drinkItem.waterBalanceDelta
             repository.setWaterBalance(updatedWaterBalance)
         }
     }

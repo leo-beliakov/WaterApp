@@ -5,7 +5,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.leoapps.waterapp.water.data.WaterBalanceRepositoryImpl
+import com.google.firebase.firestore.FirebaseFirestore
+import com.leoapps.waterapp.water.data.UserRepositoryFirebaseImpl
+import com.leoapps.waterapp.water.data.WaterBalanceRepositoryLocalImpl
+import com.leoapps.waterapp.water.domain.UserRepository
 import com.leoapps.waterapp.water.domain.WaterBalanceRepository
 import dagger.Binds
 import dagger.Module
@@ -26,6 +29,10 @@ object DataModule {
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create {
         context.preferencesDataStoreFile("water-app-datastore")
     }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore() = FirebaseFirestore.getInstance()
 }
 
 @Module
@@ -33,5 +40,8 @@ object DataModule {
 interface DataBindsModule {
 
     @Binds
-    fun bindsRepository(impl: WaterBalanceRepositoryImpl): WaterBalanceRepository
+    fun bindsRepository(impl: WaterBalanceRepositoryLocalImpl): WaterBalanceRepository
+
+    @Binds
+    fun bindsFirebaseRepository(impl: UserRepositoryFirebaseImpl): UserRepository
 }

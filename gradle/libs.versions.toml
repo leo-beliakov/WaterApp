@@ -35,6 +35,7 @@ google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", ve
 google-firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 google-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 google-firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+google-firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
 google-gms-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "gmsAuth" }
 facebook-sdk = { group = "com.facebook.android", name = "facebook-android-sdk", version.ref = "facebook" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }

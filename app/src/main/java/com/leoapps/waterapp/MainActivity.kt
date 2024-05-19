@@ -13,6 +13,7 @@ import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
 import com.leoapps.waterapp.root.presentation.RootScreen
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -29,7 +30,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 //TODO DONE:
 //1.1. Make beverages buttons work - DONE
@@ -50,6 +50,8 @@ class MainActivity : ComponentActivity() {
 //17.1 Keyboard Insets for Auth
 //17. Simple Auth Screen UI
 //22. Make textbuttons clickable without ripple
+//-. Simple Signup Screen UI
+//18. Auth logic
 
 //TODO:
 //9. Think about corner cases like negative balance or balance > 100%
@@ -57,9 +59,8 @@ class MainActivity : ComponentActivity() {
 //12. Implement a weekly/monthly chart
 //15. Screen transition animations
 //16. Simple Profile UI
-//-. Simple Signup Screen UI
-//18. Auth logic
 //19. Retrieving profile logic
 //20. Storing data about the progress in Firebase
 //21. I don't like that all features' screens are exposed to the root. (See Login screens).
 //23. Navigation issues on the Main screen with BackStack
+// - New navigation from google (type safe)

@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.google.firebase.analytics)
     implementation(libs.google.firebase.crashlytics)
     implementation(libs.google.firebase.auth)
+    implementation(libs.google.firebase.firestore)
     implementation(libs.google.gms.auth)
 
     //Facebook

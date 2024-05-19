@@ -6,11 +6,10 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.facebook.login.LoginResult
-import com.google.firebase.auth.FirebaseUser
 import com.leoapps.waterapp.R
-import com.leoapps.waterapp.auth.common.data.FacebookAuthHelper
-import com.leoapps.waterapp.auth.common.data.GoogleAuthHelper
-import com.leoapps.waterapp.auth.signup.domain.SignUpUserUseCase
+import com.leoapps.waterapp.auth.common.domain.LogInUseCase
+import com.leoapps.waterapp.auth.common.domain.model.User
+import com.leoapps.waterapp.auth.signup.domain.CreateAccountUseCase
 import com.leoapps.waterapp.auth.signup.domain.ValidateEmailUseCase
 import com.leoapps.waterapp.auth.signup.domain.ValidateNameUseCase
 import com.leoapps.waterapp.auth.signup.domain.ValidatePasswordUseCase
@@ -30,12 +29,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val signUpUser: SignUpUserUseCase,
+    private val createAccount: CreateAccountUseCase,
     private val validatePassword: ValidatePasswordUseCase,
     private val isNameValid: ValidateNameUseCase,
     private val isEmailValid: ValidateEmailUseCase,
-    private val googleAuthHelper: GoogleAuthHelper,
-    private val facebookAuthHelper: FacebookAuthHelper,
+    private val logIn: LogInUseCase,
     private val mapper: SignupMapper
 ) : ViewModel() {
 
@@ -142,7 +140,7 @@ class SignUpViewModel @Inject constructor(
 
     fun onGoogleLoginClicked() {
         viewModelScope.launch {
-            _sideEffects.emit(SignUpUiEffect.RequestGoogleAuth(googleAuthHelper.signInRequest))
+            _sideEffects.emit(SignUpUiEffect.RequestGoogleAuth)
         }
     }
 
@@ -153,15 +151,11 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onGoogleAuthSuccess(result: GetCredentialResponse) = viewModelScope.launch {
-        googleAuthHelper
-            .handleSuccessSignIn(result)
-            .collect(::handleAuthResult)
+        logIn(result).collect(::handleAuthResult)
     }
 
     fun onFacebookAuthSuccess(result: LoginResult) = viewModelScope.launch {
-        facebookAuthHelper
-            .handleSuccessSignIn(result)
-            .collect(::handleAuthResult)
+        logIn(result).collect(::handleAuthResult)
     }
 
     fun onFailedSignInResponse(exception: Exception) {
@@ -173,7 +167,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     private fun createAccount() = viewModelScope.launch {
-        signUpUser(
+        createAccount(
             name = _state.value.name,
             email = _state.value.email,
             password = _state.value.password,
@@ -229,7 +223,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleAuthResult(authResult: TaskResult<FirebaseUser>) {
+    private suspend fun handleAuthResult(authResult: TaskResult<User>) {
         when (authResult) {
             TaskResult.Loading -> {
                 _state.update { it.copy(loading = true) }

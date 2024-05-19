@@ -45,11 +45,11 @@ fun HomeDayScreen(
             columns = GridCells.Fixed(2)
         ) {
             items(
-                items = state.beverageItems,
+                items = state.drinkItems,
                 key = { it.name }
             ) { beverage ->
                 BeverageItem(
-                    beverageItem = beverage,
+                    drinkItem = beverage,
                     onClick = viewModel::onBeverageClick
                 )
             }

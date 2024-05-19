@@ -39,6 +39,7 @@ class ProfileViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         username = user?.name ?: "",
+                        email = user?.email ?: "",
                         profileInfoVisible = user != null,
                         loginButtonVisible = user == null,
                     )

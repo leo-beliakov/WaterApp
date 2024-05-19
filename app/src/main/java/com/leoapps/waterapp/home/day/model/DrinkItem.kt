@@ -8,7 +8,7 @@ import com.leoapps.waterapp.common.presentation.theme.Coffee
 import com.leoapps.waterapp.common.presentation.theme.Green
 import com.leoapps.waterapp.common.presentation.theme.PurpleLight
 
-enum class BeverageItem(
+enum class DrinkItem(
     @DrawableRes val iconResId: Int,
     @StringRes val titleResId: Int,
     val waterBalanceDelta: Int,

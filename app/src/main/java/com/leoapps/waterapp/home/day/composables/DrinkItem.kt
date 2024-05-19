@@ -25,12 +25,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
-import com.leoapps.waterapp.home.day.model.BeverageItem
+import com.leoapps.waterapp.home.day.model.DrinkItem
 
 @Composable
 fun BeverageItem(
-    beverageItem: BeverageItem,
-    onClick: (BeverageItem) -> Unit,
+    drinkItem: DrinkItem,
+    onClick: (DrinkItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -39,8 +39,8 @@ fun BeverageItem(
         modifier = modifier
             .padding()
             .clip(RoundedCornerShape(12.dp))
-            .background(beverageItem.color)
-            .clickable { onClick(beverageItem) }
+            .background(drinkItem.color)
+            .clickable { onClick(drinkItem) }
             .padding(8.dp)
     ) {
         Box(
@@ -53,12 +53,12 @@ fun BeverageItem(
                 )
         ) {
             Image(
-                painter = painterResource(beverageItem.iconResId),
+                painter = painterResource(drinkItem.iconResId),
                 contentDescription = null
             )
         }
         Text(
-            text = stringResource(beverageItem.titleResId),
+            text = stringResource(drinkItem.titleResId),
             textAlign = TextAlign.Center,
             style = TextStyle.Default.copy(
                 fontSize = 18.sp,
@@ -77,7 +77,7 @@ fun BeverageItem(
 private fun BeverageItemPreview() {
     WaterAppTheme {
         BeverageItem(
-            beverageItem = BeverageItem.COFFEE,
+            drinkItem = DrinkItem.COFFEE,
             onClick = {},
             modifier = Modifier.width(200.dp)
         )

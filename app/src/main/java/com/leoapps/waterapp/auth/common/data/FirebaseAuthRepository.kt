@@ -1,10 +1,17 @@
 package com.leoapps.waterapp.auth.common.data
 
+import androidx.credentials.GetCredentialResponse
+import com.facebook.login.LoginResult
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.userProfileChangeRequest
 import com.leoapps.waterapp.auth.common.domain.AuthRepository
 import com.leoapps.waterapp.auth.common.domain.model.AuthException
+import com.leoapps.waterapp.auth.common.domain.model.EmailCredential
 import com.leoapps.waterapp.auth.common.domain.model.User
 import com.leoapps.waterapp.common.domain.task_result.TaskResult
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +36,8 @@ class FirebaseAuthRepository @Inject constructor(
             currentUser.value = authInfo.currentUser?.let { firebaseUser ->
                 User(
                     id = firebaseUser.uid,
-                    name = firebaseUser.displayName
+                    name = firebaseUser.displayName,
+                    email = firebaseUser.email ?: ""
                 )
             }
         }
@@ -52,32 +60,17 @@ class FirebaseAuthRepository @Inject constructor(
         emit(TaskResult.Failure(it))
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun logoutUser() = withContext(Dispatchers.IO) {
+    override suspend fun logOut() = withContext(Dispatchers.IO) {
         auth.signOut()
     }
 
-    //FirebaseAuthInvalidCredentialsException
-    override suspend fun signinUser(
-        email: String,
-        password: String
-    ) = flow<TaskResult<FirebaseUser>> {
-        emit(TaskResult.Loading)
-
-        val authResult = auth.signInWithEmailAndPassword(email, password).await()
-        val user = authResult.user ?: throw AuthException("User is null")
-
-        emit(TaskResult.Success(user))
-    }.catch {
-        emit(TaskResult.Failure(it))
-    }.flowOn(Dispatchers.IO)
-
     //FirebaseAuthUserCollisionException - The email address is already in use by another account.
     //FirebaseNetworkException - No connection
-    override fun signupUser(
+    override fun createAccount(
         name: String,
         email: String,
         password: String
-    ) = flow<TaskResult<FirebaseUser>> {
+    ) = flow<TaskResult<User>> {
         emit(TaskResult.Loading)
 
         val authResult = auth
@@ -94,8 +87,71 @@ class FirebaseAuthRepository @Inject constructor(
 
         val user = authResult?.user ?: throw AuthException("User is null")
 
-        emit(TaskResult.Success(user))
+        emit(TaskResult.Success(user.mapToDomain()))
     }.catch {
         emit(TaskResult.Failure(it))
     }.flowOn(Dispatchers.IO)
+
+    //FirebaseAuthInvalidCredentialsException
+    override fun logIn(
+        credentials: Any
+    ) = flow<TaskResult<User>> {
+        emit(TaskResult.Loading)
+
+        val firebaseUser = when (credentials) {
+            is EmailCredential -> logInWithEmail(credentials)
+            is GetCredentialResponse -> loginWithGoogle(credentials)
+            is LoginResult -> loginWithFacebook(credentials)
+            else -> throw AuthException("Unsupported credentials")
+        }
+
+        emit(TaskResult.Success(firebaseUser.mapToDomain()))
+    }.catch {
+        emit(TaskResult.Failure(it))
+    }.flowOn(Dispatchers.IO)
+
+    private suspend fun loginWithFacebook(credential: LoginResult): FirebaseUser {
+        //Create a Facebook Credential Token from the credential data
+        val token = credential.accessToken.token
+        //Create a Firebase credential object using the Facebook Auth provider
+        val firebaseCredential = FacebookAuthProvider.getCredential(token)
+
+        return logInWithFirebaseCredentials(firebaseCredential)
+    }
+
+    private suspend fun loginWithGoogle(credential: GetCredentialResponse): FirebaseUser {
+        //Create a Google Credential Token from the credential data
+        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(
+            credential.credential.data
+        )
+        //Create a Firebase credential object using the Google Auth provider
+        val firebaseCredential = GoogleAuthProvider.getCredential(
+            googleIdTokenCredential.idToken,
+            null
+        )
+
+        return logInWithFirebaseCredentials(firebaseCredential)
+    }
+
+    private suspend fun logInWithEmail(credential: EmailCredential): FirebaseUser {
+        val authResult = auth.signInWithEmailAndPassword(
+            credential.email,
+            credential.password
+        ).await()
+
+        return authResult.user ?: throw AuthException("User is null")
+    }
+
+    private suspend fun logInWithFirebaseCredentials(credential: AuthCredential): FirebaseUser {
+        val authResult = auth.signInWithCredential(credential).await()
+        return authResult.user ?: throw AuthException("User is null")
+    }
+}
+
+private fun FirebaseUser.mapToDomain(): User {
+    return User(
+        id = uid,
+        name = displayName,
+        email = email
+    )
 }

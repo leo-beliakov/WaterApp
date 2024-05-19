@@ -2,7 +2,7 @@ package com.leoapps.waterapp.home.day.model
 
 data class DayUiState(
     val progressState: ProgressState,
-    val beverageItems: List<BeverageItem>
+    val drinkItems: List<DrinkItem>
 ) {
     data class ProgressState(
         val percentText: String = "",
