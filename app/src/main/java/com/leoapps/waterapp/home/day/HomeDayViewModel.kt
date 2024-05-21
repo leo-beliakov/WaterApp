@@ -2,17 +2,23 @@ package com.leoapps.waterapp.home.day
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.leoapps.waterapp.auth.common.domain.GetCurrentUserAsFlowUseCase
 import com.leoapps.waterapp.common.vibrator.domain.WaterAppVibrator
 import com.leoapps.waterapp.home.day.model.DayProgressState
 import com.leoapps.waterapp.home.day.model.DayUiState
 import com.leoapps.waterapp.home.day.model.DrinkItem
 import com.leoapps.waterapp.home.day.model.HomeDayUiEffect
-import com.leoapps.waterapp.water.domain.WaterBalanceRepository
+import com.leoapps.waterapp.water.domain.GetUserWaterDataAsFlowUseCase
+import com.leoapps.waterapp.water.domain.UpdateWaterGoalUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -20,9 +26,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeDayViewModel @Inject constructor(
-    private val repository: WaterBalanceRepository,
+    private val getCurrentUserAsFlow: GetCurrentUserAsFlowUseCase,
+    private val getUserWaterDataAsFlow: GetUserWaterDataAsFlowUseCase,
+    private val updateUserWaterData: UpdateWaterGoalUseCase,
     private val vibrator: WaterAppVibrator
 ) : ViewModel() {
 
@@ -33,6 +42,8 @@ class HomeDayViewModel @Inject constructor(
 
     private val _sideEffects = MutableSharedFlow<HomeDayUiEffect>()
     val sideEffects: SharedFlow<HomeDayUiEffect> = _sideEffects
+
+    private var currentUserId: String? = null
 
     init {
         goalState
@@ -49,11 +60,27 @@ class HomeDayViewModel @Inject constructor(
                 }
             }.launchIn(viewModelScope)
 
-        repository.getWaterBalanceAsFlow()
-            .onEach { balance ->
-                val updatedProgress = balance.toFloat() / goalState.value.goalMl
-                goalState.update { it.copy(consumedMl = balance) }
-                _sideEffects.emit(HomeDayUiEffect.AnimateProgressTo(updatedProgress))
+        getCurrentUserAsFlow()
+            .distinctUntilChanged { old, new -> new?.id == old?.id }
+            .flatMapLatest { user ->
+                currentUserId = user?.id
+                user?.id?.let { getUserWaterDataAsFlow(it) } ?: emptyFlow()
+            }
+            .onEach { waterData ->
+                if (waterData != null) {
+                    val goalPercent = waterData.goal
+                    //todo calculate progress & update the state
+                } else {
+                    _state.update {
+                        it.copy(
+                            progressState = DayUiState.ProgressState(
+                                percentText = "0%",
+                                consumedText = "0 ml",
+                                progress = 0f,
+                            )
+                        )
+                    }
+                }
             }
             .launchIn(viewModelScope)
     }
@@ -71,7 +98,8 @@ class HomeDayViewModel @Inject constructor(
         viewModelScope.launch {
             vibrator.vibrateOnClick()
             val updatedWaterBalance = goalState.value.consumedMl + drinkItem.waterBalanceDelta
-            repository.setWaterBalance(updatedWaterBalance)
+//            updateUserWaterData()
+//            repository.setWaterBalance(updatedWaterBalance)
         }
     }
 }

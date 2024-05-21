@@ -3,70 +3,77 @@ package com.leoapps.waterapp.water.data
 import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.toObject
 import com.leoapps.waterapp.auth.common.domain.AuthRepository
 import com.leoapps.waterapp.auth.common.domain.model.User
 import com.leoapps.waterapp.common.domain.task_result.TaskResult
-import com.leoapps.waterapp.water.domain.UserRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import com.leoapps.waterapp.water.domain.WaterDataRepository
+import com.leoapps.waterapp.water.domain.model.Drink
+import com.leoapps.waterapp.water.domain.model.WaterData
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
 
-class UserRepositoryFirebaseImpl @Inject constructor(
+class WaterDataFirebaseRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val authRepository: AuthRepository,
-) : UserRepository {
+) : WaterDataRepository {
+    override suspend fun getUserWaterDataAsFlow(userId: String): Flow<WaterData?> {
+        if (!isUserWaterDataInitialized(userId)) {
+            initializeUserWaterData(userId)
+        }
 
-    private val currentUser = MutableStateFlow<User?>(null)
-
-    //todo think about cancelation?
-    private val scope = CoroutineScope(Job())
-
-    init {
-        scope.launch {
-            authRepository.getCurrentUserAsFlow()
-                .collect { authUser ->
-                    when {
-                        authUser == null -> {
-                            currentUser.value = null
+        return callbackFlow {
+            val listenerRegistration = firestore
+                .collection("users")
+                .document(userId)
+                .addSnapshotListener { snapshot, error ->
+                    val waterData = try {
+                        if (error == null) {
+                            snapshot?.toObject<WaterData>()
+                        } else {
+                            Timber.e(error, "Firestore Snapshot Listener Error")
+                            null
                         }
-
-                        !userExists(authUser) -> {
-                            addUser(authUser)
-                            currentUser.value = authUser
-                        }
-
-                        else -> {
-                            //todo update User
-                            currentUser.value = authUser
-                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Firestore Snapshot Listener Error")
+                        null
                     }
+
+                    trySend(waterData)
                 }
+            awaitClose { listenerRegistration.remove() }
         }
     }
 
-    override fun getCurrentUserAsFlow(): Flow<User?> {
-        return currentUser.asStateFlow()
+    override suspend fun deleteDataForUser(userId: String) {
+        firestore.collection("users")
+            .document(userId)
+            .delete()
+            .await()
     }
 
-    private suspend fun addUser(user: User): TaskResult<Unit> {
-        return try {
-            val userDocumentRef = firestore.collection("users")
-                .document(user.id)
-                .get()
-                .await()
+    override suspend fun updateWaterGoal(userId: String, goal: Int) {
+        firestore.collection("users")
+            .document(userId)
+            .set(mapOf("goal" to goal), SetOptions.merge())
+            .await()
+    }
 
-            if (!userDocumentRef.exists()) {
-                firestore.collection("users")
-                    .document(user.id)
-                    .set(user)
-                    .await()
-            }
+    override suspend fun addWaterRecording(userId: String, drink: Drink) {
+        TODO("Not yet implemented")
+    }
+
+    private suspend fun initializeUserWaterData(userId: String): TaskResult<Unit> {
+        return try {
+            firestore.collection("users")
+                .document(userId)
+                .set(WaterData())
+                .await()
 
             TaskResult.Success(Unit)
         } catch (e: FirebaseException) {
@@ -94,8 +101,7 @@ class UserRepositoryFirebaseImpl @Inject constructor(
                 .get()
                 .await()
 
-            val user =
-                document.toObject<User>() ?: throw NullPointerException("user is null")
+            val user = document.toObject<User>() ?: throw NullPointerException("user is null")
 
             TaskResult.Success(user)
         } catch (e: FirebaseException) {
@@ -103,17 +109,13 @@ class UserRepositoryFirebaseImpl @Inject constructor(
         }
     }
 
-    private suspend fun userExists(user: User): Boolean {
+    private suspend fun isUserWaterDataInitialized(userId: String): Boolean {
         val userDocumentRef = firestore.collection("users")
-            .document(user.id)
+            .document(userId)
             .get()
             .await()
 
         return userDocumentRef.exists()
-    }
-
-    override suspend fun deleteUser() {
-
     }
 
     private fun serverTimeStamp() {

@@ -1,7 +1,5 @@
 package com.leoapps.waterapp.common.domain.task_result
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onEach
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -42,14 +40,4 @@ inline fun <R, T> TaskResult<T>.map(transform: (value: T) -> R): TaskResult<R> {
 
 fun <T> TaskResult<T>.mapToUnit(): TaskResult<Unit> {
     return this.map { Unit }
-}
-
-fun <T> Flow<TaskResult<T>>.onSuccess(
-    callback: suspend (T) -> Unit
-): Flow<TaskResult<T>> {
-    return this.onEach { result ->
-        if (result.isSuccess()) {
-            callback.invoke(result.value)
-        }
-    }
 }

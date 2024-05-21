@@ -34,7 +34,7 @@ class FirebaseAuthRepository @Inject constructor(
 
     init {
         auth.addAuthStateListener { authInfo ->
-            Timber.i("Firebase Auth State Changed email: ${authInfo.currentUser?.email}")
+            Timber.i("Firebase Auth State Changed. UserId: ${authInfo.currentUser?.uid}")
             currentUser.value = authInfo.currentUser?.let { firebaseUser ->
                 User(
                     id = firebaseUser.uid,
@@ -89,6 +89,11 @@ class FirebaseAuthRepository @Inject constructor(
             ?.await()
 
         val user = authResult?.user ?: throw AuthException("User is null")
+        val userDomain = user.mapToDomain()
+
+        //We need to manually update the current user state after changing its name
+        //Because AuthStateListener doesn't track these changes
+        currentUser.value = userDomain
 
         emit(TaskResult.Success(user.mapToDomain()))
     }.catch {
