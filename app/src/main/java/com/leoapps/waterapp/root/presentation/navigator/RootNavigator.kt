@@ -7,14 +7,14 @@ class RootNavigator(
 ) {
     fun openMain() {
         navController.navigate("main") {
-            popUpTo("onboarding") { inclusive = true }
+            popUpTo(navController.backQueue.first().destination.id) { inclusive = true }
             launchSingleTop = true
         }
     }
 
     fun openOnboarding() {
         navController.navigate("onboarding") {
-            popUpTo("splash") { inclusive = true }
+            popUpTo(navController.backQueue.first().destination.id) { inclusive = true }
             launchSingleTop = true
         }
     }

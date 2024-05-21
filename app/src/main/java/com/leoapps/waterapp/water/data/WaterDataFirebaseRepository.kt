@@ -44,6 +44,7 @@ class WaterDataFirebaseRepository @Inject constructor(
                         null
                     }
 
+                    Timber.d("New Water Data observed: $waterData")
                     trySend(waterData)
                 }
             awaitClose { listenerRegistration.remove() }

@@ -23,8 +23,8 @@ class RootViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             if (shouldShowOnboarding()) {
-                setOnboardingShown(isShown = true)
                 _sideEffects.emit(RootUiEffect.GoToOnboarding)
+                setOnboardingShown(isShown = true)
             } else {
                 _sideEffects.emit(RootUiEffect.GoToMain)
             }
