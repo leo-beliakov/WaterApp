@@ -28,7 +28,7 @@ import com.leoapps.waterapp.common.presentation.theme.WaterAppTheme
 import com.leoapps.waterapp.home.day.model.DrinkItem
 
 @Composable
-fun BeverageItem(
+fun DrinkItem(
     drinkItem: DrinkItem,
     onClick: (DrinkItem) -> Unit,
     modifier: Modifier = Modifier
@@ -74,9 +74,9 @@ fun BeverageItem(
 
 @Preview
 @Composable
-private fun BeverageItemPreview() {
+private fun DrinkItemPreview() {
     WaterAppTheme {
-        BeverageItem(
+        DrinkItem(
             drinkItem = DrinkItem.COFFEE,
             onClick = {},
             modifier = Modifier.width(200.dp)

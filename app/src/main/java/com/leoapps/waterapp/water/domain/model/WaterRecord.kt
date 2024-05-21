@@ -1,6 +1,8 @@
 package com.leoapps.waterapp.water.domain.model
 
+import com.google.firebase.Timestamp
+
 data class WaterRecord(
-    val amount: Int,
-    val timestamp: Long
+    val drink: Drink = Drink.WATER,
+    val timestamp: Timestamp = Timestamp.now()
 )

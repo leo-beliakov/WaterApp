@@ -4,12 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leoapps.waterapp.auth.common.domain.GetCurrentUserAsFlowUseCase
 import com.leoapps.waterapp.common.vibrator.domain.WaterAppVibrator
-import com.leoapps.waterapp.home.day.model.DayProgressState
 import com.leoapps.waterapp.home.day.model.DayUiState
 import com.leoapps.waterapp.home.day.model.DrinkItem
 import com.leoapps.waterapp.home.day.model.HomeDayUiEffect
+import com.leoapps.waterapp.water.domain.AddWaterRecordingUseCase
+import com.leoapps.waterapp.water.domain.CalculateDayProgressUseCase
 import com.leoapps.waterapp.water.domain.GetUserWaterDataAsFlowUseCase
-import com.leoapps.waterapp.water.domain.UpdateWaterGoalUseCase
+import com.leoapps.waterapp.water.domain.model.WaterData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,11 +32,10 @@ import kotlin.math.roundToInt
 class HomeDayViewModel @Inject constructor(
     private val getCurrentUserAsFlow: GetCurrentUserAsFlowUseCase,
     private val getUserWaterDataAsFlow: GetUserWaterDataAsFlowUseCase,
-    private val updateUserWaterData: UpdateWaterGoalUseCase,
+    private val calculateDayProgress: CalculateDayProgressUseCase,
+    private val addWaterRecording: AddWaterRecordingUseCase,
     private val vibrator: WaterAppVibrator
 ) : ViewModel() {
-
-    private val goalState = MutableStateFlow(getInitialGoalState())
 
     private val _state = MutableStateFlow(getInitialUiState())
     val state = _state.asStateFlow()
@@ -46,60 +46,51 @@ class HomeDayViewModel @Inject constructor(
     private var currentUserId: String? = null
 
     init {
-        goalState
-            .onEach { newDayState ->
-                _state.update {
-                    val goalPercent = newDayState.consumedMl.toFloat() / newDayState.goalMl
-                    it.copy(
-                        progressState = it.progressState.copy(
-                            progress = goalPercent,
-                            percentText = "${(goalPercent * 100).roundToInt()}%",
-                            consumedText = "${newDayState.consumedMl} ml"
-                        )
-                    )
-                }
-            }.launchIn(viewModelScope)
-
         getCurrentUserAsFlow()
             .distinctUntilChanged { old, new -> new?.id == old?.id }
             .flatMapLatest { user ->
                 currentUserId = user?.id
                 user?.id?.let { getUserWaterDataAsFlow(it) } ?: emptyFlow()
             }
-            .onEach { waterData ->
-                if (waterData != null) {
-                    val goalPercent = waterData.goal
-                    //todo calculate progress & update the state
-                } else {
-                    _state.update {
-                        it.copy(
-                            progressState = DayUiState.ProgressState(
-                                percentText = "0%",
-                                consumedText = "0 ml",
-                                progress = 0f,
-                            )
-                        )
-                    }
-                }
-            }
+            .onEach(::onWaterDataReceived)
             .launchIn(viewModelScope)
     }
 
-    private fun getInitialGoalState() = DayProgressState(
-        goalMl = 1900
-    )
+    fun onDrinkClick(drinkItem: DrinkItem) {
+        viewModelScope.launch {
+            vibrator.vibrateOnClick()
+            currentUserId?.let { addWaterRecording(it, drinkItem.type) }
+        }
+    }
+
+    private suspend fun onWaterDataReceived(waterData: WaterData?) {
+        if (waterData != null) {
+            val progress = calculateDayProgress(waterData)
+            _sideEffects.emit(HomeDayUiEffect.AnimateProgressTo(progress.progress))
+            _state.update {
+                it.copy(
+                    progressState = DayUiState.ProgressState(
+                        percentText = "${(progress.progress * 100).roundToInt()}%",
+                        consumedText = "${progress.balanceMl} ml",
+                        progress = progress.progress,
+                    )
+                )
+            }
+        } else {
+            _state.update {
+                it.copy(
+                    progressState = DayUiState.ProgressState(
+                        percentText = "0%",
+                        consumedText = "0 ml",
+                        progress = 0f,
+                    )
+                )
+            }
+        }
+    }
 
     private fun getInitialUiState() = DayUiState(
         progressState = DayUiState.ProgressState(),
         drinkItems = DrinkItem.entries,
     )
-
-    fun onBeverageClick(drinkItem: DrinkItem) {
-        viewModelScope.launch {
-            vibrator.vibrateOnClick()
-            val updatedWaterBalance = goalState.value.consumedMl + drinkItem.waterBalanceDelta
-//            updateUserWaterData()
-//            repository.setWaterBalance(updatedWaterBalance)
-        }
-    }
 }

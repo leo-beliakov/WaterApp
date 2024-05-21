@@ -11,12 +11,18 @@ import com.leoapps.waterapp.common.domain.task_result.TaskResult
 import com.leoapps.waterapp.water.domain.WaterDataRepository
 import com.leoapps.waterapp.water.domain.model.Drink
 import com.leoapps.waterapp.water.domain.model.WaterData
+import com.leoapps.waterapp.water.domain.model.WaterRecord
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
+
+data class WaterDataTest(
+    val goal: Int = 0,
+    val records: List<Drink> = emptyList()
+)
 
 class WaterDataFirebaseRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
@@ -66,7 +72,14 @@ class WaterDataFirebaseRepository @Inject constructor(
     }
 
     override suspend fun addWaterRecording(userId: String, drink: Drink) {
-        TODO("Not yet implemented")
+        val waterRecord = WaterRecord(
+            drink = drink
+        )
+
+        firestore.collection("users")
+            .document(userId)
+            .update("records", FieldValue.arrayUnion(waterRecord))
+            .await()
     }
 
     private suspend fun initializeUserWaterData(userId: String): TaskResult<Unit> {

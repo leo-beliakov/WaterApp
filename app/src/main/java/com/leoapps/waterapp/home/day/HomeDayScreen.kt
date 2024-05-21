@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.leoapps.waterapp.common.utils.CollectEventsWithLifecycle
-import com.leoapps.waterapp.home.day.composables.BeverageItem
+import com.leoapps.waterapp.home.day.composables.DrinkItem
 import com.leoapps.waterapp.home.day.composables.progress.CircleProgress
 import com.leoapps.waterapp.home.day.composables.progress.rememberProgressState
 import com.leoapps.waterapp.home.day.model.HomeDayUiEffect
@@ -48,9 +48,9 @@ fun HomeDayScreen(
                 items = state.drinkItems,
                 key = { it.name }
             ) { beverage ->
-                BeverageItem(
+                DrinkItem(
                     drinkItem = beverage,
-                    onClick = viewModel::onBeverageClick
+                    onClick = viewModel::onDrinkClick
                 )
             }
         }
